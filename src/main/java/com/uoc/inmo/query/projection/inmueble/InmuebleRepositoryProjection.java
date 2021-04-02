@@ -47,8 +47,8 @@ public class InmuebleRepositoryProjection {
 
         entity.setId(event.getId());
         entity.setPrice(event.getPrice());
-        entity.setRegisterDate(new Date());
-        entity.setLastUpdate(new Date());
+        entity.setCreated(new Date());
+        entity.setUpdated(new Date());
 
         inmuebleSummaryRepository.save(entity);
 

@@ -16,7 +16,7 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "INMUEBLE_SUMMARY")
+@Table(name = "INMUEBLE")
 @NamedQueries({
     @NamedQuery(name = "InmuebleSummary.fetch",
             query = "SELECT c FROM InmuebleSummary c WHERE c.id LIKE CONCAT(:idStartsWith, '%') ORDER BY c.id"),
@@ -32,9 +32,9 @@ public class InmuebleSummary {
     private double price;
 
     @Column
-    private Date registerDate;
+    private Date created;
 
     @Column
-    private Date lastUpdate;
+    private Date updated;
 
 }

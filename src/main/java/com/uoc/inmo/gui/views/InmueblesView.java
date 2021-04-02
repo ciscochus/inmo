@@ -181,8 +181,8 @@ public class InmueblesView extends UI {
         Grid<InmuebleSummary> grid = new Grid<>();
         grid.addColumn(InmuebleSummary::getId).setCaption("ID");
         grid.addColumn(InmuebleSummary::getPrice).setCaption("Price");
-        grid.addColumn(InmuebleSummary::getRegisterDate).setCaption("Registered");
-        grid.addColumn(InmuebleSummary::getLastUpdate).setCaption("Updated");
+        grid.addColumn(InmuebleSummary::getCreated).setCaption("Created");
+        grid.addColumn(InmuebleSummary::getUpdated).setCaption("Updated");
         grid.setSizeFull();
         grid.setDataProvider(inmuebleSummaryDataProvider);
         return grid;
