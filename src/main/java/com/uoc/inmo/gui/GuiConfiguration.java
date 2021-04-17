@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 @Profile("gui")
 public class GuiConfiguration {
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void helloHub(ApplicationReadyEvent event) {
-        QueryGateway queryGateway = event.getApplicationContext().getBean(QueryGateway.class);
-        queryGateway.query(new CountInmuebleSummariesQuery(),
-                           ResponseTypes.instanceOf(CountInmuebleSummariesResponse.class));
-    }
+    // @EventListener(ApplicationReadyEvent.class)
+    // public void helloHub(ApplicationReadyEvent event) {
+    //     QueryGateway queryGateway = event.getApplicationContext().getBean(QueryGateway.class);
+    //     queryGateway.query(new CountInmuebleSummariesQuery(),
+    //                        ResponseTypes.instanceOf(CountInmuebleSummariesResponse.class));
+    // }
 }

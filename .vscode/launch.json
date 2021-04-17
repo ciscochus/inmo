@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<inmo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.uoc.inmo.gui.Application",
+            "projectName": "inmo",
+            "args": ""
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<inmo>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "console": "internalConsole",
+            "mainClass": "com.uoc.inmo.Application",
+            "projectName": "inmo",
+            "args": ""
+        }
+    ]
+}

@@ -21,15 +21,16 @@ import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.XSlf4j;
 
-@Service
 @RequiredArgsConstructor
 @XSlf4j
+@Component
 public class InmuebleRepositoryProjection {
     
     @NonNull
@@ -42,7 +43,7 @@ public class InmuebleRepositoryProjection {
     private final EntityManager entityManager;
 
     @EventHandler
-    public void addInmueble(InmuebleCreatedEvent event){
+    public void on(InmuebleCreatedEvent event){
         InmuebleSummary entity = new InmuebleSummary();
 
         entity.setId(event.getId());
@@ -64,7 +65,7 @@ public class InmuebleRepositoryProjection {
     }
 
     @EventHandler
-    public void deleteInmueble(InmuebleDeletedEvent event){
+    public void on(InmuebleDeletedEvent event){
         Optional<InmuebleSummary> entity = inmuebleSummaryRepository.findById(event.getId());
 
         if(entity.isPresent())
