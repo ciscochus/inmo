@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@Route(value = "hello", layout = MainView.class)
+@Route(value = "inmuebles", layout = MainView.class)
 @RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Inmuebles")
 @CssImport("./views/inmuebles/inmuebles-view.css")
@@ -54,6 +54,8 @@ public class InmueblesView extends Div {
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
+
+    private Button applyButton = new Button("Aplicar");
 
     // private BeanValidationBinder<InmuebleSummary> binder;
 
@@ -94,7 +96,7 @@ public class InmueblesView extends Div {
         splitLayout.setSizeFull();
 
         createGridLayout(splitLayout);
-        createEditorLayout(splitLayout);
+        createFilterLayout(splitLayout);
 
         add(splitLayout);
 
@@ -202,13 +204,13 @@ public class InmueblesView extends Div {
         return card;
     }
 
-    private void createEditorLayout(SplitLayout splitLayout) {
-        Div editorLayoutDiv = new Div();
-        editorLayoutDiv.setId("editor-layout");
+    private void createFilterLayout(SplitLayout splitLayout) {
+        Div filterLayoutDiv = new Div();
+        filterLayoutDiv.setId("filter-layout");
 
-        Div editorDiv = new Div();
-        editorDiv.setId("editor");
-        editorLayoutDiv.add(editorDiv);
+        Div filterDiv = new Div();
+        filterDiv.setId("filter");
+        filterLayoutDiv.add(filterDiv);
 
         FormLayout formLayout = new FormLayout();
         price = new TextField("price");
@@ -218,29 +220,30 @@ public class InmueblesView extends Div {
             ((HasStyle) field).addClassName("full-width");
         }
         formLayout.add(fields);
-        editorDiv.add(formLayout);
-        createButtonLayout(editorLayoutDiv);
+        filterDiv.add(formLayout);
+        createButtonFilterLayout(filterLayoutDiv);
 
-        splitLayout.addToSecondary(editorLayoutDiv);
+        splitLayout.addToPrimary(filterLayoutDiv);
     }
 
-    private void createButtonLayout(Div editorLayoutDiv) {
+    private void createButtonFilterLayout(Div filterLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setId("button-layout");
         buttonLayout.setWidthFull();
         buttonLayout.setSpacing(true);
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        buttonLayout.add(save, cancel);
-        editorLayoutDiv.add(buttonLayout);
+        applyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        buttonLayout.add(applyButton);
+        filterLayoutDiv.add(buttonLayout);
     }
 
     private void createGridLayout(SplitLayout splitLayout) {
         Div wrapper = new Div();
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
-        splitLayout.addToPrimary(wrapper);
+        
         wrapper.add(grid);
+
+        splitLayout.addToSecondary(wrapper);
     }
 
     private void refreshGrid() {
