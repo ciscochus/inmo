@@ -28,6 +28,15 @@ vaadin-app-layout[dir='rtl'] #header vaadin-avatar {
   margin: 0 var(--lumo-space-s);
 }
 
+#profileMenu-div .menu {
+  float: right;
+}
+
+#avatar-menu-item, 
+#profileMenu-div .menu vaadin-menu-bar-button[role='menuItem'] {
+  background-color: transparent;
+}
+
 vaadin-tab {
   font-size: var(--lumo-font-size-s);
   height: var(--lumo-size-l);
@@ -43,3 +52,4 @@ vaadin-tab[selected] {
   background-color: var(--lumo-primary-color-10pct);
   color: var(--lumo-primary-text-color);
 }
+

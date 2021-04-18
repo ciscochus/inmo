@@ -2,18 +2,24 @@ package com.uoc.inmo.gui.views.main;
 
 import java.util.Optional;
 
+import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.views.about.AboutView;
 import com.uoc.inmo.gui.views.inmuebles.InmueblesView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.applayout.DrawerToggle;
 import com.vaadin.flow.component.avatar.Avatar;
+import com.vaadin.flow.component.contextmenu.MenuItem;
+import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -24,6 +30,7 @@ import com.vaadin.flow.component.tabs.TabsVariant;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.server.VaadinServlet;
 
 /**
  * The main view is a top-level placeholder for other views.
@@ -34,6 +41,8 @@ import com.vaadin.flow.server.PWA;
 @Push
 public class MainView extends AppLayout {
 
+    private static final String TITLE_LOGOUT = "Log out";
+    private static final String TITLE_LOGIN = "Log in";
     private final Tabs menu;
     private H1 viewTitle;
 
@@ -57,9 +66,30 @@ public class MainView extends AppLayout {
         Div logoDiv = new Div();
         logoDiv.setId("logo-div");
 
-        layout.add(logoDiv, viewTitle, new Avatar());
+
+        MenuBar profileMenu = createProfileMenu();
+        profileMenu.addClassName("menu");
+
+        Div profileMenuDiv = new Div(profileMenu);
+        profileMenuDiv.setId("profileMenu-div");
+        profileMenuDiv.setWidthFull();
+
+        layout.add(logoDiv, viewTitle, profileMenuDiv);
         
         return layout;
+    }
+
+    private MenuBar createProfileMenu(){
+        MenuBar menuBar = new MenuBar();
+
+        MenuItem avatar = menuBar.addItem(new Avatar());
+        avatar.setId("avatar-menu-item");
+
+        SubMenu subMenu = avatar.getSubMenu();
+        subMenu.addItem(createLoginItem(VaadinServlet.getCurrent().getServletContext().getContextPath()));
+        
+
+        return menuBar;
     }
 
     private Component createDrawerContent(Tabs menu) {
@@ -114,4 +144,28 @@ public class MainView extends AppLayout {
         PageTitle title = getContent().getClass().getAnnotation(PageTitle.class);
         return title == null ? "" : title.value();
     }
+
+    private Component createLoginItem(String contextPath){
+        String href = contextPath;
+        VaadinIcon icon = VaadinIcon.SIGN_OUT;
+        String title = "";
+        if(SecurityUtils.isUserLoggedIn()){
+            href += "/logout";
+            title = TITLE_LOGOUT;
+        } else {
+            href += "/login";
+            icon = VaadinIcon.SIGN_IN;
+            title = TITLE_LOGIN;
+        }
+
+        final Anchor a = populateLink(new Anchor(), icon, title);
+        a.setHref(href);
+        return a;
+    }
+
+    private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon, String title) {
+		a.add(icon.create());
+		a.add(title);
+		return a;
+	}
 }
