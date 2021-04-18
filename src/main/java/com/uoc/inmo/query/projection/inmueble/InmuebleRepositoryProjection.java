@@ -68,8 +68,18 @@ public class InmuebleRepositoryProjection {
     public void on(InmuebleDeletedEvent event){
         Optional<InmuebleSummary> entity = inmuebleSummaryRepository.findById(event.getId());
 
-        if(entity.isPresent())
-        inmuebleSummaryRepository.delete(entity.get());
+        if(entity.isPresent()){
+            inmuebleSummaryRepository.delete(entity.get());
+            
+            queryUpdateEmitter.emit(CountInmuebleSummariesQuery.class, 
+                query -> event.getId().toString().startsWith(""), 
+                new CountChangedUpdate());
+
+            queryUpdateEmitter.emit(FetchInmuebleSummariesQuery.class,
+                query -> event.getId().toString().startsWith(""),
+                entity.get());
+        }
+        
     }
 
     @QueryHandler

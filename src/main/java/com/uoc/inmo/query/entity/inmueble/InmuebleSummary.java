@@ -28,8 +28,32 @@ public class InmuebleSummary {
     @Type(type = "uuid-char")
     private UUID id;
 
-    @Column
+    @Column(length = 200, columnDefinition = "default ''")
+    private String title;
+
+    @Column(length = 200, columnDefinition = "default ''")
+    private String address;
+
+    @Column(columnDefinition = "default 0")
     private double price;
+
+    @Column(columnDefinition = "default 0")
+    private double area;
+
+    @Column(length = 50, columnDefinition = "default ''")
+    private String type;
+
+    @Column(columnDefinition = "default false")
+    private Boolean garage;
+
+    @Column(columnDefinition = "default false")
+    private Boolean pool;
+
+    @Column(columnDefinition = "default 0")
+    private Integer rooms;
+
+    @Column(columnDefinition = "default 0")
+    private Integer baths;
 
     @Column
     private Date created;
@@ -37,4 +61,6 @@ public class InmuebleSummary {
     @Column
     private Date updated;
 
+    @Column(length = 2000, columnDefinition = "default ''")
+    private String description;
 }

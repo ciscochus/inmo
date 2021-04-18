@@ -4,7 +4,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.UUID;
 
-import com.uoc.inmo.gui.data.provider.InmuebleSummaryDataProvider;
 import com.uoc.inmo.gui.data.service.InmuebleService;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
@@ -12,7 +11,6 @@ import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.filter.inmueble.InmuebleFilter;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasStyle;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
@@ -20,8 +18,13 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Result;
@@ -31,7 +34,6 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
-import com.vaadin.flow.spring.annotation.UIScope;
 
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -57,35 +59,13 @@ public class InmueblesView extends Div {
 
     private InmuebleSummary inmuebleSummary;
 
-    private InmuebleSummaryDataProvider inmuebleSummaryDataProvider;
-
     private SubscriptionQueryResult<List<InmuebleSummary>, InmuebleSummary> fetchQueryResult;
     private InmuebleFilter filter = new InmuebleFilter(new UUID(0, 0));
 
 
     public InmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService) {
 
-        DataProvider<InmuebleSummary, Void> dataProvider =
-            DataProvider.fromCallbacks(
-                // First callback fetches items based on a query
-                query -> {
-                    // The index of the first item to load
-                    int offset = query.getOffset();
-
-                    // The number of items to load
-                    int limit = query.getLimit();
-
-                    List<InmuebleSummary> inmuebleSummaries = inmuebleService.fetchInmuebleSummary(offset, limit);
-
-                    return inmuebleSummaries.stream();
-                },
-                // Second callback fetches the total number of items currently in the Grid.
-                // The grid can then use it to properly adjust the scrollbars.
-                query -> inmuebleService.getInmuebleSummaryCount());
-
-
-
-        inmuebleSummaryDataProvider = new InmuebleSummaryDataProvider(queryGateway);
+        DataProvider<InmuebleSummary, Void> dataProvider = getInmuebleSummaryDataProvider(inmuebleService);
 
         if (fetchQueryResult != null) {
             fetchQueryResult.cancel();
@@ -119,29 +99,12 @@ public class InmueblesView extends Div {
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("price").setAutoWidth(true);
+        // grid.addColumn("price").setAutoWidth(true);
         grid.setDataProvider(dataProvider);
-        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
+        grid.addThemeVariants(GridVariant.LUMO_NO_BORDER, GridVariant.LUMO_NO_ROW_BORDERS);
         grid.setHeightFull();
-
-        // when a row is selected or deselected, populate form
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            // if (event.getValue() != null) {
-            //     Optional<InmuebleSummary> inmuebleSummaryFromBackend = inmuebleSummaryService
-            //             .get(event.getValue().getId());
-            //     // when a row is selected but the data is no longer available, refresh grid
-            //     if (inmuebleSummaryFromBackend.isPresent()) {
-            //         populateForm(inmuebleSummaryFromBackend.get());
-            //     } else {
-            //         refreshGrid();
-            //     }
-            // } else {
-            //     clearForm();
-            // }
-        });
-
-        // Configure Form
-        // binder = new BeanValidationBinder<>(InmuebleSummary.class);
+        grid.addComponentColumn(inmueble -> createCard(inmueble));
+        
 
         Converter converter = new Converter<String,Double>(){
 
@@ -179,6 +142,64 @@ public class InmueblesView extends Div {
             }
         });
 
+    }
+
+    private HorizontalLayout createCard(InmuebleSummary inmueble) {
+        HorizontalLayout card = new HorizontalLayout();
+        card.addClassName("card");
+        card.setSpacing(false);
+        card.getThemeList().add("spacing-s");
+        card.setWidthFull();
+
+        //Image-zone
+        VerticalLayout imageLayout = new VerticalLayout();
+        imageLayout.addClassName("imageLayout");
+
+        //Image-zone
+        VerticalLayout propertiesLayout = new VerticalLayout();
+        propertiesLayout.addClassName("propertiesLayout");
+
+        Span superficie = new Span(inmueble.getArea()+" m2");
+        superficie.addClassName("superficie");
+
+        Span rooms = new Span(inmueble.getRooms()+" hab.");
+        rooms.addClassName("rooms");
+
+        Span baths = new Span(inmueble.getBaths()+" baños");
+        baths.addClassName("baths");
+
+        propertiesLayout.add(superficie, rooms, baths);
+
+        //Center-zone
+        VerticalLayout description = new VerticalLayout();
+        description.addClassName("description");
+
+        Span title = new Span(inmueble.getTitle());
+        title.addClassName("title");
+
+        Span address = new Span(inmueble.getAddress());
+        address.addClassName("address");
+
+        description.add(title, address);
+
+
+        //Right-zone
+        VerticalLayout priceLayout = new VerticalLayout();
+        priceLayout.addClassName("priceLayout");
+        priceLayout.setAlignItems(Alignment.END);
+
+        Span price = new Span(inmueble.getPrice()+" €");
+        price.addClassName("price");
+
+        Icon plusIcon = VaadinIcon.PLUS_CIRCLE_O.create();
+        Button detailButton = new Button(plusIcon);
+
+        priceLayout.add(price,detailButton);
+
+
+        card.add(imageLayout, propertiesLayout, description, priceLayout);
+
+        return card;
     }
 
     private void createEditorLayout(SplitLayout splitLayout) {
@@ -242,5 +263,24 @@ public class InmueblesView extends Div {
         this.inmuebleSummary = value;
         // binder.readBean(this.inmuebleSummary);
 
+    }
+
+    private DataProvider<InmuebleSummary, Void> getInmuebleSummaryDataProvider(InmuebleService inmuebleService){
+        return DataProvider.fromCallbacks(
+                // First callback fetches items based on a query
+                query -> {
+                    // The index of the first item to load
+                    int offset = query.getOffset();
+
+                    // The number of items to load
+                    int limit = query.getLimit();
+
+                    List<InmuebleSummary> inmuebleSummaries = inmuebleService.fetchInmuebleSummary(offset, limit);
+
+                    return inmuebleSummaries.stream();
+                },
+                // Second callback fetches the total number of items currently in the Grid.
+                // The grid can then use it to properly adjust the scrollbars.
+                query -> inmuebleService.getInmuebleSummaryCount());
     }
 }
