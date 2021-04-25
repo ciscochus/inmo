@@ -16,10 +16,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration 
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final String LOGIN_PROCESSING_URL = "/ui/login";
+    public static final String LOGIN_PROCESSING_URL = "/ui/login";
     private static final String LOGIN_FAILURE_URL = "/ui/login?error";
-    private static final String LOGIN_URL = "/ui/login";
-    private static final String LOGOUT_SUCCESS_URL = "/ui/login";
+    private static final String LOGIN_URL = LOGIN_PROCESSING_URL;
+    
+    public static final String LOGOUT_PROCESSING_URL = "/ui/logout";
+    private static final String LOGOUT_SUCCESS_URL = LOGIN_PROCESSING_URL;
     private static final String INDEX_URL = "/ui/";
 
     private final UserDetailsService userDetailsService;
@@ -62,7 +64,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .loginProcessingUrl(LOGIN_PROCESSING_URL)
             .successForwardUrl(INDEX_URL)
             .failureUrl(LOGIN_FAILURE_URL)
-            .and().logout().logoutSuccessUrl(LOGOUT_SUCCESS_URL); 
+            .and().logout().logoutUrl(LOGOUT_PROCESSING_URL)
+            .logoutSuccessUrl(LOGOUT_SUCCESS_URL); 
 
         // http.csrf().disable().authorizeRequests().antMatchers("/**").permitAll();
 

@@ -2,6 +2,7 @@ package com.uoc.inmo.gui.views.main;
 
 import java.util.Optional;
 
+import com.uoc.inmo.gui.security.SecurityConfiguration;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.views.about.AboutView;
 import com.uoc.inmo.gui.views.inmuebles.InmueblesView;
@@ -150,10 +151,10 @@ public class MainView extends AppLayout {
         VaadinIcon icon = VaadinIcon.SIGN_OUT;
         String title = "";
         if(SecurityUtils.isUserLoggedIn()){
-            href += "/ui/logout";
+            href += SecurityConfiguration.LOGOUT_PROCESSING_URL;
             title = TITLE_LOGOUT;
         } else {
-            href += "/ui/login";
+            href += SecurityConfiguration.LOGIN_PROCESSING_URL;
             icon = VaadinIcon.SIGN_IN;
             title = TITLE_LOGIN;
         }
