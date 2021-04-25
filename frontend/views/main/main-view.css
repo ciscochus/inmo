@@ -1,6 +1,7 @@
 #header {
   height: var(--lumo-size-xl);
   box-shadow: var(--lumo-box-shadow-s);
+  padding-left: 15px;
 }
 #header vaadin-avatar {
   margin-left: auto;
@@ -33,8 +34,8 @@ vaadin-app-layout[dir='rtl'] #header vaadin-avatar {
 }
 
 #avatar-menu-item, 
-#profileMenu-div .menu vaadin-menu-bar-button[role='menuItem'] {
-  background-color: transparent;
+#profileMenu-div .menu * {
+  background-color: transparent !important;
 }
 
 vaadin-tab {

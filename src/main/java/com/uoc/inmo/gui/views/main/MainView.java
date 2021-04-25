@@ -150,10 +150,10 @@ public class MainView extends AppLayout {
         VaadinIcon icon = VaadinIcon.SIGN_OUT;
         String title = "";
         if(SecurityUtils.isUserLoggedIn()){
-            href += "/logout";
+            href += "/ui/logout";
             title = TITLE_LOGOUT;
         } else {
-            href += "/login";
+            href += "/ui/login";
             icon = VaadinIcon.SIGN_IN;
             title = TITLE_LOGIN;
         }
@@ -165,7 +165,7 @@ public class MainView extends AppLayout {
 
     private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon, String title) {
 		a.add(icon.create());
-		a.add(title);
+		a.add(" "+title);
 		return a;
 	}
 }

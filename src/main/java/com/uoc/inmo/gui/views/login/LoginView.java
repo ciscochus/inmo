@@ -2,7 +2,6 @@ package com.uoc.inmo.gui.views.login;
 
 import com.uoc.inmo.gui.views.main.MainView;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
