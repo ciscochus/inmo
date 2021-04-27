@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@RestController(value = "/api")
+@RestController(value = "/api/command")
 @RequiredArgsConstructor
 public class CommandApi {
     
