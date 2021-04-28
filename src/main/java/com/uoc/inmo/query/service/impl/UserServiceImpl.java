@@ -31,7 +31,16 @@ public class UserServiceImpl implements UserService{
     public User createUser(RequestUser request){
         User user = converToUser(request);
 
+        return createUser(user);
+    }
+
+    @Override
+    public User createUser(User user){
+
         if(user != null){
+
+            String encodedPassword = passwordEncoder.encode(user.getPassword);
+            user.setPassword(encodedPassword);
 
             if(userRepository.existsById(user.getEmail()))
                 throw new EntityExistsException();
@@ -49,17 +58,14 @@ public class UserServiceImpl implements UserService{
         if(request == null)
             return null;
 
-        String password = request.getPassword();
-
-        if(!StringUtils.hasText(password))
+        if(!StringUtils.hasText(request.getEmail()) ||
+        !StringUtils.hasText(request.getPassword()))
             return null;
 
-        String encodedPassword = passwordEncoder.encode(password);
-        
         User user = new User();
         user.setEmail(request.getEmail());
 
-        user.setPassword(encodedPassword);
+        user.setPassword(request.getPassword());
         user.setTipo(request.getTipo());
 
         return user;

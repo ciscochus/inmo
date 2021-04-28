@@ -44,6 +44,10 @@ public class MainView extends AppLayout {
 
     private static final String TITLE_LOGOUT = "Log out";
     private static final String TITLE_LOGIN = "Log in";
+    private static final String TITLE_SIGN_UP = "Sign up";
+    private static final String URL_SIGN_UP = "/ui/signup";
+
+    
     private final Tabs menu;
     private H1 viewTitle;
 
@@ -87,7 +91,15 @@ public class MainView extends AppLayout {
         avatar.setId("avatar-menu-item");
 
         SubMenu subMenu = avatar.getSubMenu();
-        subMenu.addItem(createLoginItem(VaadinServlet.getCurrent().getServletContext().getContextPath()));
+        String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
+
+        if(SecurityUtils.isUserLoggedIn()){
+            subMenu.addItem(createLogoutItem(contextPath));
+        } else {
+            subMenu.addItem(createLoginItem(contextPath));
+            subMenu.addItem(createSingUptItem(contextPath));
+        }
+        
         
 
         return menuBar;
@@ -148,16 +160,34 @@ public class MainView extends AppLayout {
 
     private Component createLoginItem(String contextPath){
         String href = contextPath;
+        href += SecurityConfiguration.LOGIN_PROCESSING_URL;
+        
+        VaadinIcon icon = VaadinIcon.SIGN_IN;
+        String title = TITLE_LOGIN;
+
+        final Anchor a = populateLink(new Anchor(), icon, title);
+        a.setHref(href);
+        return a;
+    }
+
+    private Component createLogoutItem(String contextPath){
+        String href = contextPath;
         VaadinIcon icon = VaadinIcon.SIGN_OUT;
-        String title = "";
-        if(SecurityUtils.isUserLoggedIn()){
-            href += SecurityConfiguration.LOGOUT_PROCESSING_URL;
-            title = TITLE_LOGOUT;
-        } else {
-            href += SecurityConfiguration.LOGIN_PROCESSING_URL;
-            icon = VaadinIcon.SIGN_IN;
-            title = TITLE_LOGIN;
-        }
+        
+        href += SecurityConfiguration.LOGOUT_PROCESSING_URL;
+        String title = TITLE_SIGN_UP;
+
+        final Anchor a = populateLink(new Anchor(), icon, title);
+        a.setHref(href);
+        return a;
+    }
+
+    private Component createSingUptItem(String contextPath){
+        String href = contextPath;
+        VaadinIcon icon = VaadinIcon.USER;
+        
+        href += URL_SIGN_UP;
+        String title = TITLE_SIGN_UP;
 
         final Anchor a = populateLink(new Anchor(), icon, title);
         a.setHref(href);

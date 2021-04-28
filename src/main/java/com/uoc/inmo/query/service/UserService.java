@@ -6,4 +6,5 @@ import com.uoc.inmo.query.entity.user.User;
 public interface UserService {
     
     public User createUser(RequestUser request);
+    public User createUser(User user);
 }
