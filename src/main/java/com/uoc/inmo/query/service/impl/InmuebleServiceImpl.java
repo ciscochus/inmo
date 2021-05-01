@@ -1,7 +1,9 @@
 package com.uoc.inmo.query.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
+import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
 import com.uoc.inmo.query.service.InmuebleService;
@@ -20,12 +22,20 @@ public class InmuebleServiceImpl implements InmuebleService{
     private final InmuebleSummaryRepository inmuebleSummaryRepository;
 
     @Override
-    public List<InmuebleSummary> fetchInmuebleSummary(int offset, int limit){
-        return inmuebleSummaryRepository.findAll(PageRequest.of(offset, limit)).getContent();
+    public List<InmuebleSummary> fetchInmuebleSummary(int offset, int limit, Optional<InmuebleSummaryFilter> filter){
+
+        if(filter.isPresent())
+            return inmuebleSummaryRepository.findAll(filter.get().getSpecification(), PageRequest.of(offset, limit)).getContent();
+
+        return inmuebleSummaryRepository.findAll(PageRequest.of(offset, limit)).getContent(); 
     }
 
     @Override
-    public int getInmuebleSummaryCount() {
+    public int getInmuebleSummaryCount(Optional<InmuebleSummaryFilter> filter) {
+        if(filter.isPresent())
+            return Long.valueOf(inmuebleSummaryRepository.count(filter.get().getSpecification())).intValue();
+
         return Long.valueOf(inmuebleSummaryRepository.count()).intValue();
     }
+
 }

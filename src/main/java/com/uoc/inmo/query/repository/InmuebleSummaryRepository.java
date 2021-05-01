@@ -5,9 +5,10 @@ import java.util.UUID;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface InmuebleSummaryRepository extends JpaRepository<InmuebleSummary, UUID>{
+public interface InmuebleSummaryRepository extends JpaRepository<InmuebleSummary, UUID>, JpaSpecificationExecutor<InmuebleSummary>{
     
 }

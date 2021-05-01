@@ -2,8 +2,10 @@ package com.uoc.inmo.gui.views.inmuebles;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
+import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
@@ -30,6 +32,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -49,6 +52,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class InmueblesView extends Div {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Grid<InmuebleSummary> grid = new Grid<>(InmuebleSummary.class, false);
+    private InmuebleSummaryFilter inmuebleSummaryFilter = new InmuebleSummaryFilter();
 
     private TextField price;
 
@@ -66,8 +70,9 @@ public class InmueblesView extends Div {
 
 
     public InmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService) {
+        ConfigurableFilterDataProvider<InmuebleSummary, Void, InmuebleSummaryFilter> dataProvider = getInmuebleSummaryDataProvider(inmuebleService).withConfigurableFilter();
 
-        DataProvider<InmuebleSummary, Void> dataProvider = getInmuebleSummaryDataProvider(inmuebleService);
+        dataProvider.setFilter(inmuebleSummaryFilter);
 
         if (fetchQueryResult != null) {
             fetchQueryResult.cancel();
@@ -232,8 +237,17 @@ public class InmueblesView extends Div {
         buttonLayout.setWidthFull();
         buttonLayout.setSpacing(true);
         applyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        applyButton.addClickListener(e -> filterGrid());
+        
+        
         buttonLayout.add(applyButton);
+
         filterLayoutDiv.add(buttonLayout);
+    }
+
+    public void filterGrid(){
+        inmuebleSummaryFilter.setPrice(price.getValue());
+        refreshGrid();
     }
 
     private void createGridLayout(SplitLayout splitLayout) {
@@ -268,8 +282,9 @@ public class InmueblesView extends Div {
 
     }
 
-    private DataProvider<InmuebleSummary, Void> getInmuebleSummaryDataProvider(InmuebleService inmuebleService){
-        return DataProvider.fromCallbacks(
+    private DataProvider<InmuebleSummary, InmuebleSummaryFilter> getInmuebleSummaryDataProvider(InmuebleService inmuebleService){
+
+        return DataProvider.fromFilteringCallbacks(
                 // First callback fetches items based on a query
                 query -> {
                     // The index of the first item to load
@@ -278,12 +293,17 @@ public class InmueblesView extends Div {
                     // The number of items to load
                     int limit = query.getLimit();
 
-                    List<InmuebleSummary> inmuebleSummaries = inmuebleService.fetchInmuebleSummary(offset, limit);
+                    Optional<InmuebleSummaryFilter> filter = query.getFilter();
+
+                    List<InmuebleSummary> inmuebleSummaries = inmuebleService.fetchInmuebleSummary(offset, limit, filter);
 
                     return inmuebleSummaries.stream();
                 },
                 // Second callback fetches the total number of items currently in the Grid.
                 // The grid can then use it to properly adjust the scrollbars.
-                query -> inmuebleService.getInmuebleSummaryCount());
+                query -> {
+                    Optional<InmuebleSummaryFilter> filter = query.getFilter();
+                    return inmuebleService.getInmuebleSummaryCount(filter);
+                });
     }
 }
