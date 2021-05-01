@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService{
 
         if(user != null){
 
-            String encodedPassword = passwordEncoder.encode(user.getPassword);
+            String encodedPassword = passwordEncoder.encode(user.getPassword());
             user.setPassword(encodedPassword);
 
             if(userRepository.existsById(user.getEmail()))

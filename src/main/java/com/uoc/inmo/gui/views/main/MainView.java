@@ -55,7 +55,8 @@ public class MainView extends AppLayout {
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
-        // addToDrawer(createDrawerContent(menu));
+        // addToDrawer(createDrawerContent(menu));+
+        
     }
 
     private Component createHeaderContent() {
@@ -70,6 +71,16 @@ public class MainView extends AppLayout {
 
         Div logoDiv = new Div();
         logoDiv.setId("logo-div");
+
+        Image logoImg = new Image("/icons/logo_small.png", "Logo");
+
+        Anchor home = new Anchor("/ui/", logoImg);
+        home.setId("logoHome");
+
+        Anchor disclaimerLogoAnchor = new Anchor("https://pngtree.com/so/house-icons", "house icons png from pngtree.com");
+        disclaimerLogoAnchor.addClassName("disclaimerLogoAnchor");
+
+        logoDiv.add(home, disclaimerLogoAnchor);
 
 
         MenuBar profileMenu = createProfileMenu();

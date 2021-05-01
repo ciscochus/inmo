@@ -28,6 +28,24 @@ vaadin-app-layout[dir='rtl'] #header vaadin-avatar {
   font-weight: 600;
   margin: 0 var(--lumo-space-s);
 }
+a#logoHome {
+  vertical-align: middle;
+  height: 50px;
+  display: inline-block;
+  margin-top: 20px;
+}
+
+a#logoHome img {
+  height: 50px;
+  width: 50px;
+}
+
+
+
+a.disclaimerLogoAnchor {
+  font-size: 1px;
+  color: transparent;
+}
 
 #profileMenu-div .menu {
   float: right;
