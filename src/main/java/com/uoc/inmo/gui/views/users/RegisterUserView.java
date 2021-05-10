@@ -4,6 +4,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.uoc.inmo.gui.service.InmuebleService;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.entity.user.User;
 import com.uoc.inmo.query.service.UserService;
@@ -37,9 +38,11 @@ public class RegisterUserView extends Div {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final UserService userService;
+    private final InmuebleService inmuebleService;
 
-    public RegisterUserView(@Autowired UserService userService) {
+    public RegisterUserView(@Autowired UserService userService, @Autowired InmuebleService inmuebleService) {
         this.userService  = userService;
+        inmuebleService.createInmueble(null);
         addRegisterForm();
     }
 
