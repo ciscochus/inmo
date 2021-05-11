@@ -2,6 +2,7 @@ package com.uoc.inmo.query.service.impl;
 
 import java.util.Collections;
 
+import com.uoc.inmo.query.entity.user.Role;
 import com.uoc.inmo.query.entity.user.User;
 import com.uoc.inmo.query.repository.UserRepository;
 
@@ -31,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 		} else {
             String tipo = user.getTipo();
             if(!StringUtils.hasText(tipo))
-                tipo = User.ROLE_PARTICULAR;
+                tipo = Role.PARTICULAR;
 
 			return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(),
 					Collections.singletonList(new SimpleGrantedAuthority(tipo)));

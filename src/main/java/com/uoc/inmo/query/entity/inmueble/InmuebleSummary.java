@@ -50,10 +50,10 @@ public class InmuebleSummary {
     private Boolean pool;
 
     @Column(columnDefinition = "default 0")
-    private Integer rooms;
+    private int rooms;
 
     @Column(columnDefinition = "default 0")
-    private Integer baths;
+    private int baths;
 
     @Column
     private Date created;

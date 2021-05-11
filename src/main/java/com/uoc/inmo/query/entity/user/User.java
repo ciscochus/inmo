@@ -12,9 +12,6 @@ import lombok.Data;
 @Table(name = "user", schema = "public")
 public class User {
 
-    public static final String ROLE_PROFESIONAL = "PROFESIONAL";
-    public static final String ROLE_PARTICULAR = "PARTICULAR";
-    
     @Id
     @Column(name = "email", length = 200)
     private String email;

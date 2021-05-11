@@ -19,7 +19,6 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -46,8 +45,12 @@ public class MainView extends AppLayout {
     private static final String TITLE_LOGOUT = "Log out";
     private static final String TITLE_LOGIN = "Log in";
     private static final String TITLE_SIGN_UP = "Sign up";
+    private static final String TITLE_NEW_INMUEBLE = "Añadir inmueble";
+    private static final String TITLE_MIS_INMUEBLES = "Mis inmuebles";
+
     private static final String URL_SIGN_UP = "/ui/signup";
     private static final String URL_NEW_INMUEBLE = "/ui/createInmueble";
+    private static final String URL_MIS_INMUEBLES = "/ui/misInmuebles";
 
     
     private final Tabs menu;
@@ -84,8 +87,6 @@ public class MainView extends AppLayout {
 
         logoDiv.add(home, disclaimerLogoAnchor);
 
-        Div createInmuebleDiv = createInmuebleDiv();
-
         MenuBar profileMenu = createProfileMenu();
         profileMenu.addClassName("menu");
 
@@ -94,9 +95,6 @@ public class MainView extends AppLayout {
         profileMenuDiv.setWidthFull();
 
         layout.add(logoDiv, viewTitle);
-        
-        if(createInmuebleDiv != null)
-            layout.add(createInmuebleDiv);
 
         layout.add(profileMenuDiv);
         
@@ -113,7 +111,13 @@ public class MainView extends AppLayout {
         String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
 
         if(SecurityUtils.isUserLoggedIn()){
+            if(SecurityUtils.isProfesionalLoggedUser()){
+                subMenu.addItem(createMisInmueblesItem(contextPath));
+                subMenu.addItem(createNewInmuebleItem(contextPath));
+            }
             subMenu.addItem(createLogoutItem(contextPath));
+
+
         } else {
             subMenu.addItem(createLoginItem(contextPath));
             subMenu.addItem(createSingUpItem(contextPath));
@@ -194,10 +198,30 @@ public class MainView extends AppLayout {
         VaadinIcon icon = VaadinIcon.SIGN_OUT;
         
         href += SecurityConfiguration.LOGOUT_PROCESSING_URL;
-        String title = TITLE_SIGN_UP;
+        String title = TITLE_LOGOUT;
 
         final Anchor a = populateLink(new Anchor(), icon, title);
         a.setHref(href);
+        return a;
+    }
+
+    private Component createMisInmueblesItem(String contextPath){
+        String href = contextPath;
+        
+        href += URL_MIS_INMUEBLES;
+        String title = TITLE_MIS_INMUEBLES;
+
+        final Anchor a = new Anchor(href, title);
+        return a;
+    }
+
+    private Component createNewInmuebleItem(String contextPath){
+        String href = contextPath;
+        
+        href += URL_NEW_INMUEBLE;
+        String title = TITLE_NEW_INMUEBLE;
+
+        final Anchor a = new Anchor(href, title);
         return a;
     }
 
@@ -210,36 +234,6 @@ public class MainView extends AppLayout {
 
         final Anchor a = populateLink(new Anchor(), icon, title);
         a.setHref(href);
-        return a;
-    }
-
-    private Div createInmuebleDiv(){
-        if(!SecurityUtils.isUserLoggedIn())
-            return null;
-
-        Div createInmuebleDiv = new Div();
-        createInmuebleDiv.setId("createInmueble-div");
-
-        String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
-
-        Anchor createInmuebleAnchor = createNewInmuebleAnchor(contextPath);
-        createInmuebleAnchor.setId("createInmueble-button");
-
-        createInmuebleDiv.add(createInmuebleAnchor);
-
-        return createInmuebleDiv;
-    }
-
-    private Anchor createNewInmuebleAnchor(String contextPath){
-        String href = contextPath;
-        VaadinIcon icon = VaadinIcon.PLUS_CIRCLE;
-        
-        href += URL_NEW_INMUEBLE;
-
-        final Anchor a = populateLink(new Anchor(), icon);
-        a.setHref(href);
-        a.setTitle("Añadir inmueble");
-
         return a;
     }
 

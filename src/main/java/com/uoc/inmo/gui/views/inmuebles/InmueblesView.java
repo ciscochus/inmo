@@ -11,10 +11,9 @@ import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.filter.inmueble.InmuebleFilter;
 import com.uoc.inmo.query.service.InmuebleService;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -28,7 +27,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
@@ -52,14 +51,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class InmueblesView extends Div {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Grid<InmuebleSummary> grid = new Grid<>(InmuebleSummary.class, false);
-    private InmuebleSummaryFilter inmuebleSummaryFilter = new InmuebleSummaryFilter();
+    public InmuebleSummaryFilter inmuebleSummaryFilter = getFilter();
 
-    private TextField price;
+    private NumberField minPrice;
+    private NumberField maxPrice;
+
+    private NumberField minArea;
+    private NumberField maxArea;
+
+    CheckboxGroup<String> roomsCheckboxGroup;
+    CheckboxGroup<String> bathsCheckboxGroup;
 
     private Button cancel = new Button("Cancel");
     private Button save = new Button("Save");
 
     private Button applyButton = new Button("Aplicar");
+    private Button resetButton = new Button("Reset");
 
     // private BeanValidationBinder<InmuebleSummary> binder;
 
@@ -151,7 +158,11 @@ public class InmueblesView extends Div {
 
     }
 
-    private HorizontalLayout createCard(InmuebleSummary inmueble) {
+    public InmuebleSummaryFilter getFilter() {
+        return new InmuebleSummaryFilter();
+    }
+
+    public HorizontalLayout createCard(InmuebleSummary inmueble) {
         HorizontalLayout card = new HorizontalLayout();
         card.addClassName("card");
         card.setSpacing(false);
@@ -198,15 +209,24 @@ public class InmueblesView extends Div {
         Span price = new Span(inmueble.getPrice()+" €");
         price.addClassName("price");
 
-        Icon plusIcon = VaadinIcon.PLUS_CIRCLE_O.create();
-        Button detailButton = new Button(plusIcon);
-
-        priceLayout.add(price,detailButton);
+        priceLayout.add(price,getCardAcciones());
 
 
         card.add(imageLayout, propertiesLayout, description, priceLayout);
 
         return card;
+    }
+
+    public HorizontalLayout getCardAcciones(){
+        HorizontalLayout acciones = new HorizontalLayout();
+
+        //Detail
+        Icon plusIcon = VaadinIcon.PLUS_CIRCLE_O.create();
+        Button detailButton = new Button(plusIcon);
+
+        acciones.add(detailButton);
+
+        return acciones;
     }
 
     private void createFilterLayout(SplitLayout splitLayout) {
@@ -218,13 +238,40 @@ public class InmueblesView extends Div {
         filterLayoutDiv.add(filterDiv);
 
         FormLayout formLayout = new FormLayout();
-        price = new TextField("price");
-        Component[] fields = new Component[]{price};
 
-        for (Component field : fields) {
-            ((HasStyle) field).addClassName("full-width");
-        }
-        formLayout.add(fields);
+        // Price
+
+        minPrice = new NumberField("Precio Mín");
+        minPrice.setHasControls(true);
+
+        maxPrice = new NumberField("Precio Max");
+        maxPrice.setHasControls(true);
+
+        formLayout.add(minPrice, maxPrice);
+
+        // Area
+
+        minArea = new NumberField("Area Mín");
+        minArea.setHasControls(true);
+
+        maxArea = new NumberField("Area Max");
+        maxArea.setHasControls(true);
+
+        formLayout.add(minArea, maxArea);
+
+        // Rooms
+        roomsCheckboxGroup = new CheckboxGroup<>();
+        roomsCheckboxGroup.setLabel("Habitaciones");
+        roomsCheckboxGroup.setItems("0", "1", "2", "3", "4+");
+
+        // Baths
+        bathsCheckboxGroup = new CheckboxGroup<>();
+        bathsCheckboxGroup.setLabel("Baños");
+        bathsCheckboxGroup.setItems("1", "2", "3+");
+
+        formLayout.add(roomsCheckboxGroup, bathsCheckboxGroup);
+
+        
         filterDiv.add(formLayout);
         createButtonFilterLayout(filterLayoutDiv);
 
@@ -236,17 +283,34 @@ public class InmueblesView extends Div {
         buttonLayout.setId("button-layout");
         buttonLayout.setWidthFull();
         buttonLayout.setSpacing(true);
+
         applyButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         applyButton.addClickListener(e -> filterGrid());
+
+        resetButton.addClickListener(e -> clearForm());
         
         
-        buttonLayout.add(applyButton);
+        buttonLayout.add(applyButton, resetButton);
 
         filterLayoutDiv.add(buttonLayout);
     }
 
     public void filterGrid(){
-        inmuebleSummaryFilter.setPrice(price.getValue());
+
+        //Price
+        inmuebleSummaryFilter.setMinPrice(minPrice.getValue());
+        inmuebleSummaryFilter.setMaxPrice(maxPrice.getValue());
+
+        //Area
+        inmuebleSummaryFilter.setMinArea(minArea.getValue());
+        inmuebleSummaryFilter.setMaxArea(maxArea.getValue());
+
+        //Rooms
+        inmuebleSummaryFilter.setRooms(roomsCheckboxGroup.getValue());
+
+        //Baths
+        inmuebleSummaryFilter.setBaths(bathsCheckboxGroup.getValue());
+
         refreshGrid();
     }
 
@@ -273,13 +337,16 @@ public class InmueblesView extends Div {
     }
 
     private void clearForm() {
-        populateForm(null);
-    }
+        inmuebleSummaryFilter = getFilter();
+        
+        minPrice.clear();
+        maxPrice.clear();
 
-    private void populateForm(InmuebleSummary value) {
-        this.inmuebleSummary = value;
-        // binder.readBean(this.inmuebleSummary);
+        minArea.clear();
+        maxArea.clear();
 
+        roomsCheckboxGroup.clear();
+        bathsCheckboxGroup.clear();
     }
 
     private DataProvider<InmuebleSummary, InmuebleSummaryFilter> getInmuebleSummaryDataProvider(InmuebleService inmuebleService){

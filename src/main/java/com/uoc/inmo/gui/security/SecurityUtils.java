@@ -1,16 +1,20 @@
 package com.uoc.inmo.gui.security;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.vaadin.flow.server.HandlerHelper.RequestType;
-import com.vaadin.flow.shared.ApplicationConstants;
+import com.uoc.inmo.query.entity.user.Role;
 
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.util.CollectionUtils;
 
 public class SecurityUtils {
     
@@ -19,10 +23,16 @@ public class SecurityUtils {
     }
 
     public static boolean isFrameworkInternalRequest(HttpServletRequest request) { 
-        final String parameterValue = request.getParameter(ApplicationConstants.REQUEST_TYPE_PARAMETER);
-        return parameterValue != null
-            && Stream.of(RequestType.values())
-            .anyMatch(r -> r.getIdentifier().equals(parameterValue));
+        final String requestUri = request.getRequestURI();
+
+        boolean isInternal = requestUri != null && 
+            (requestUri.equals("/ui/") ||
+        internalUrls().stream().anyMatch(r -> requestUri.startsWith(r)));
+
+        if(!isInternal)
+            System.out.println("requestUri: "+requestUri);
+        
+        return isInternal;
     }
 
     public static boolean isUserLoggedIn() { 
@@ -49,6 +59,62 @@ public class SecurityUtils {
             return loggedUser.getUsername();
 
         return null;
+    }
+
+    public static boolean isProfesionalLoggedUser(){
+        Collection<GrantedAuthority> authorities = getAuthoritiesLoggedUser();
+
+        if(CollectionUtils.isEmpty(authorities))
+            return false;
+
+        return authorities.stream().anyMatch(r -> r.getAuthority().equalsIgnoreCase(Role.ADMIN) || 
+            r.getAuthority().equalsIgnoreCase(Role.PROFESIONAL));
+    }
+
+    public static boolean isParticularLoggedUser(){
+        Collection<GrantedAuthority> authorities = getAuthoritiesLoggedUser();
+
+        if(CollectionUtils.isEmpty(authorities))
+            return false;
+
+        return authorities.stream().anyMatch(r -> r.getAuthority().equalsIgnoreCase(Role.ADMIN) || 
+            r.getAuthority().equalsIgnoreCase(Role.PARTICULAR));
+    }
+
+    public static boolean isAdminLoggedUser(){
+        Collection<GrantedAuthority> authorities = getAuthoritiesLoggedUser();
+
+        if(CollectionUtils.isEmpty(authorities))
+            return false;
+
+        return authorities.stream().anyMatch(r -> r.getAuthority().equalsIgnoreCase(Role.ADMIN));
+    }
+
+    public static Collection<GrantedAuthority> getAuthoritiesLoggedUser(){
+        User loggedUser = getLoggedUser();
+
+        if(loggedUser != null)
+            return loggedUser.getAuthorities();
+
+        return null;
+    }
+
+    private static List<String> internalUrls(){
+
+        return new ArrayList<>(Arrays.asList(
+            "/ui/VAADIN/",
+            "/ui/sw.js",
+            "/error",
+            "/ui/icons/",
+            "/favicon.ico",
+            "/robots.txt",
+            "/manifest.webmanifest",
+            "/sw.js",
+            "/offline.html",
+            "/icons/**",
+            "/images/**",
+            "/styles/**",
+            "/h2-console/**"));
     }
 
 }

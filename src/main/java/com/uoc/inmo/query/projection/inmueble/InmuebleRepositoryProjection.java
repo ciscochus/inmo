@@ -11,6 +11,7 @@ import javax.persistence.TypedQuery;
 
 import com.uoc.inmo.api.event.inmueble.InmuebleCreatedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleDeletedEvent;
+import com.uoc.inmo.api.event.inmueble.InmuebleUpdatedEvent;
 import com.uoc.inmo.query.CountChangedUpdate;
 import com.uoc.inmo.query.CountInmuebleSummariesQuery;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
@@ -22,6 +23,7 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +78,26 @@ public class InmuebleRepositoryProjection {
     }
 
     @EventHandler
+    public void on(InmuebleUpdatedEvent event){
+        Optional<InmuebleSummary> entity = inmuebleSummaryRepository.findById(event.getId());
+
+        if(entity.isPresent()){
+
+            boolean isPriceChanged = isPriceChanged(entity.get(), event);
+
+            InmuebleSummary inmueble = override(entity.get(), event);
+
+            queryUpdateEmitter.emit(CountInmuebleSummariesQuery.class, 
+                query -> event.getId().toString().startsWith(""), 
+                new CountChangedUpdate());
+
+            queryUpdateEmitter.emit(FetchInmuebleSummariesQuery.class,
+                query -> event.getId().toString().startsWith(""),
+                entity);
+        }
+    }
+
+    @EventHandler
     public void on(InmuebleDeletedEvent event){
         Optional<InmuebleSummary> entity = inmuebleSummaryRepository.findById(event.getId());
 
@@ -116,4 +138,38 @@ public class InmuebleRepositoryProjection {
         return new CountInmuebleSummariesResponse(Long.valueOf(inmuebleSummaryRepository.count()).intValue(), Instant.now().toEpochMilli());
     } 
 
+    private InmuebleSummary override(InmuebleSummary inmueble, InmuebleUpdatedEvent event){
+
+        if(StringUtils.hasText(event.getTitle()))
+            inmueble.setTitle(event.getTitle());
+         
+        if(StringUtils.hasText(event.getAddress()))    
+		    inmueble.setAddress(event.getAddress());
+
+		inmueble.setPrice(event.getPrice());
+		inmueble.setArea(event.getArea());
+		inmueble.setGarage(event.getGarage());
+		inmueble.setPool(event.getPool());
+		inmueble.setRooms(event.getRooms());
+		inmueble.setBaths(event.getBaths());
+
+        if(StringUtils.hasText(event.getDescription()))
+		    inmueble.setDescription(event.getDescription());
+
+        inmueble.setUpdated(new Date());
+
+        return inmueble;
+    }
+
+    private boolean isPriceChanged(InmuebleSummary inmueble, InmuebleUpdatedEvent event){
+        
+        if(inmueble != null && event != null){
+            double oldPrice = inmueble.getPrice();
+            double newPrice = event.getPrice();
+
+            return oldPrice != newPrice;
+        }
+
+        return false;
+    }
 }

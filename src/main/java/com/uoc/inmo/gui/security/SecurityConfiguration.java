@@ -1,8 +1,11 @@
 package com.uoc.inmo.gui.security;
 
+import com.uoc.inmo.query.entity.user.Role;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -54,11 +57,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()  
             .requestCache().requestCache(new CustomRequestCache()) 
-            .and().authorizeRequests() 
-        //     .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()  
-            .antMatchers("/**").permitAll()
-        //     .anyRequest().authenticated()  
+            
+            // Restrict access to our application.
+            .and().authorizeRequests().antMatchers("/ui/signup").permitAll()
 
+            // Allow all flow internal requests.
+            .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
+
+            // Allow all requests by logged in users.
+            .anyRequest().hasAnyAuthority(Role.getAllRoles())
             .and().formLogin()  
             .loginPage(LOGIN_URL).permitAll()
             .loginProcessingUrl(LOGIN_PROCESSING_URL)
@@ -67,10 +74,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and().logout().logoutUrl(LOGOUT_PROCESSING_URL)
             .logoutSuccessUrl(LOGOUT_SUCCESS_URL); 
 
-        // http.csrf().disable().authorizeRequests().antMatchers("/**").permitAll();
-
-
-        // http.httpBasic().disable();
     }
 
 

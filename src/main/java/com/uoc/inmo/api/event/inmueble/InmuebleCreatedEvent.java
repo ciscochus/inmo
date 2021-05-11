@@ -10,21 +10,25 @@ import lombok.Data;
 @Data
 public class InmuebleCreatedEvent extends BaseEvent<UUID>{
 
-    public final String title;
-    public final String address;
+    public String title;
+    public String address;
 
-    public final double price;
-    public final double area;
-    public final String type;
+    public double price;
+    public double area;
+    public String type;
 
-    public final Boolean garage;
-    public final Boolean pool;
+    public Boolean garage;
+    public Boolean pool;
 
-    public final Integer rooms;
-    public final Integer baths;
+    public Integer rooms;
+    public Integer baths;
 
-    public final String description;
-    public final String email;
+    public String description;
+    public String email;
+
+    public InmuebleCreatedEvent(UUID id){
+        super(id);
+    }
 
     public InmuebleCreatedEvent(CreateInmuebleCommand command){
 

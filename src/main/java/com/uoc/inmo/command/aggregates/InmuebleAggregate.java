@@ -4,14 +4,15 @@ import java.util.UUID;
 
 import com.uoc.inmo.api.event.inmueble.InmuebleCreatedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleDeletedEvent;
+import com.uoc.inmo.api.event.inmueble.InmuebleUpdatedEvent;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
 import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
+import com.uoc.inmo.command.inmueble.UpdateInmuebleCommand;
 
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
 import org.axonframework.modelling.command.AggregateLifecycle;
-
 import org.axonframework.spring.stereotype.Aggregate;
 
 import lombok.NoArgsConstructor;
@@ -46,6 +47,12 @@ public class InmuebleAggregate {
     public InmuebleAggregate(CreateInmuebleCommand command){
         log.entry(command);
         AggregateLifecycle.apply(new InmuebleCreatedEvent(command));
+    }
+
+    @CommandHandler
+    public void handle(UpdateInmuebleCommand command){
+        log.entry(command);
+        AggregateLifecycle.apply(new InmuebleUpdatedEvent(command));
     }
 
     @CommandHandler

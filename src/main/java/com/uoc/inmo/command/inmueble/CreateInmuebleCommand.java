@@ -30,6 +30,10 @@ public class CreateInmuebleCommand extends BaseCommand<UUID> {
         super(UUID.randomUUID());
     }
 
+    public CreateInmuebleCommand(UUID id){
+        super(id);
+    }
+
     public CreateInmuebleCommand(String title, String address, double price, double area, String type,
             Boolean garage, Boolean pool, Integer rooms, Integer baths, String description, String email) {
         
