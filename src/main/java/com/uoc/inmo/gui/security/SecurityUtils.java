@@ -103,6 +103,7 @@ public class SecurityUtils {
 
         return new ArrayList<>(Arrays.asList(
             "/ui/VAADIN/",
+            "/inmueble",
             "/ui/sw.js",
             "/error",
             "/ui/icons/",

@@ -209,7 +209,7 @@ public class InmueblesView extends Div {
         Span price = new Span(inmueble.getPrice()+" €");
         price.addClassName("price");
 
-        priceLayout.add(price,getCardAcciones());
+        priceLayout.add(price,getCardAcciones(inmueble));
 
 
         card.add(imageLayout, propertiesLayout, description, priceLayout);
@@ -217,7 +217,7 @@ public class InmueblesView extends Div {
         return card;
     }
 
-    public HorizontalLayout getCardAcciones(){
+    public HorizontalLayout getCardAcciones(InmuebleSummary inmueble){
         HorizontalLayout acciones = new HorizontalLayout();
 
         //Detail
@@ -340,10 +340,16 @@ public class InmueblesView extends Div {
         inmuebleSummaryFilter = getFilter();
         
         minPrice.clear();
+        minPrice.setValue(0.0);
+
         maxPrice.clear();
+        maxPrice.setValue(0.0);
 
         minArea.clear();
+        minArea.setValue(0.0);
+
         maxArea.clear();
+        maxArea.setValue(0.0);
 
         roomsCheckboxGroup.clear();
         bathsCheckboxGroup.clear();

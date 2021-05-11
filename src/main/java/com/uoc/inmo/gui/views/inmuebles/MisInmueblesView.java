@@ -1,12 +1,22 @@
 package com.uoc.inmo.gui.views.inmuebles;
 
+import java.util.UUID;
+
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.security.SecurityUtils;
+import com.uoc.inmo.gui.service.GuiInmuebleService;
 import com.uoc.inmo.gui.views.main.MainView;
+import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.entity.user.Role;
 import com.uoc.inmo.query.service.InmuebleService;
+import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Shortcuts;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -25,13 +35,16 @@ import org.springframework.security.access.annotation.Secured;
 @Secured({Role.ADMIN, Role.PROFESIONAL})
 public class MisInmueblesView extends InmueblesView {
 
-    public MisInmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService) {
+    private final GuiInmuebleService guiInmuebleService;
+
+    public MisInmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService, @Autowired GuiInmuebleService guiInmuebleService) {
         super(queryGateway, inmuebleService);
+        this.guiInmuebleService = guiInmuebleService;
     }
 
     @Override
-    public HorizontalLayout getCardAcciones() {
-        HorizontalLayout acciones = super.getCardAcciones();
+    public HorizontalLayout getCardAcciones(InmuebleSummary inmueble) {
+        HorizontalLayout acciones = super.getCardAcciones(inmueble);
 
         //Update
         Icon editIcon = VaadinIcon.EDIT.create();
@@ -42,6 +55,7 @@ public class MisInmueblesView extends InmueblesView {
         //Delete
         Icon deleteIcon = VaadinIcon.TRASH.create();
         Button deleteButton = new Button(deleteIcon);
+        deleteButton.addClickListener(e -> deleteConfirmDialog(inmueble.getId()).open());
 
         acciones.add(deleteButton);
 
@@ -56,7 +70,33 @@ public class MisInmueblesView extends InmueblesView {
         return filter;
     }
 
-    
+
+    public Dialog deleteConfirmDialog(UUID inmuebleId){
+        Dialog dialog = new Dialog();
+        dialog.add(new Text("Esta acción no puede deshacerse. ¿Desea continuar?"));
+        dialog.setCloseOnEsc(true);
+        dialog.setCloseOnOutsideClick(false);
+
+        Button confirmButton = new Button("Aceptar", event -> {
+            deleteInmueble(inmuebleId);
+            dialog.close();
+        });
+        Button cancelButton = new Button("Cancelar", event -> {
+            dialog.close();
+        });
+        // Cancel action on ESC press
+        Shortcuts.addShortcutListener(dialog, () -> {
+            dialog.close();
+        }, Key.ESCAPE);
+
+        dialog.add(new Div(confirmButton, cancelButton));
+
+        return dialog;
+    }
+
+    public void deleteInmueble(UUID idInmueble){
+        guiInmuebleService.deleteInmueble(idInmueble);
+    }
 
     
 

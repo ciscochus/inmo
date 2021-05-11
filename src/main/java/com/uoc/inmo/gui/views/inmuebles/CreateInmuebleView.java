@@ -8,6 +8,7 @@ import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
 import com.uoc.inmo.gui.views.main.MainView;
+import com.uoc.inmo.query.entity.user.Role;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -32,11 +33,13 @@ import com.vaadin.flow.router.RouteAlias;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 
 @Route(value = "createInmueble", layout = MainView.class)
 @RouteAlias(value = "createInmueble", layout = MainView.class)
 @PageTitle("Create Inmueble")
 @CssImport("./views/inmuebles/create-inmuebles-view.css")
+@Secured({Role.ADMIN, Role.PROFESIONAL})
 public class CreateInmuebleView extends Div {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

@@ -1,6 +1,8 @@
 package com.uoc.inmo.command.api;
 
 
+import java.util.UUID;
+
 import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
 import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
@@ -9,6 +11,7 @@ import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -48,9 +51,9 @@ public class CommandApi {
 		return "Saved";
 	}
 
-    @DeleteMapping("/inmueble")
-    public String deleteInmueble(@RequestBody RequestInmueble request) {
-		commandGateway.sendAndWait(new DeleteInmuebleCommand(request.getId()));
+    @DeleteMapping("/inmueble/{id}")
+    public String deleteInmueble(@PathVariable(value = "id") UUID inmuebleId) {
+		commandGateway.sendAndWait(new DeleteInmuebleCommand(inmuebleId));
 		return "Removed";
 	}
 }

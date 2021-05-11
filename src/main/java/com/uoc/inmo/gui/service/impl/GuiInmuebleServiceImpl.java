@@ -1,5 +1,7 @@
 package com.uoc.inmo.gui.service.impl;
 
+import java.util.UUID;
+
 import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
 
@@ -20,6 +22,9 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
     @Value("${service.url.createInmueble}")
     private String createInmuebleUrl;
 
+    @Value("${service.url.deleteInmueble}")
+    private String deleteInmuebleUrl;
+
     @Override
     public RequestInmueble createInmueble(RequestInmueble request) {
         
@@ -30,6 +35,22 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
         }
         
         return null;
+    }
+
+    @Override
+    public boolean deleteInmueble(UUID idInmueble) {
+        
+        if(idInmueble == null)
+            return false;
+
+        try {
+            restTemplate.delete(deleteInmuebleUrl+"/"+idInmueble.toString());
+
+        } catch (Exception e) {
+            return false;
+        }
+
+        return true;
     }
     
 }

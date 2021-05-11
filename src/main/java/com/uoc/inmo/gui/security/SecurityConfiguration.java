@@ -59,7 +59,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .requestCache().requestCache(new CustomRequestCache()) 
             
             // Restrict access to our application.
-            .and().authorizeRequests().antMatchers("/ui/signup").permitAll()
+            .and().authorizeRequests().antMatchers("/ui/signup", "/inmueble").permitAll()
 
             // Allow all flow internal requests.
             .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
