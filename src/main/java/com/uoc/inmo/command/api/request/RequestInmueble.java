@@ -6,6 +6,8 @@ import lombok.Data;
 
 @Data
 public class RequestInmueble {
+    public static final String TYPE_ALQUILER = "ALQUILER";
+    public static final String TYPE_VENTA = "VENTA";
     
     private UUID id;
     
@@ -23,4 +25,6 @@ public class RequestInmueble {
     private Integer baths;
 
     private String description;
+
+    private String email;
 }

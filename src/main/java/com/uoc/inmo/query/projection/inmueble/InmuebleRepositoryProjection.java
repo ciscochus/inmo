@@ -22,7 +22,6 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +46,19 @@ public class InmuebleRepositoryProjection {
         InmuebleSummary entity = new InmuebleSummary();
 
         entity.setId(event.getId());
-        entity.setPrice(event.getPrice());
+        
+        entity.setTitle(event.getTitle());
+		entity.setAddress(event.getAddress());
+		entity.setPrice(event.getPrice());
+		entity.setArea(event.getArea());
+		entity.setGarage(event.getGarage());
+		entity.setPool(event.getPool());
+		entity.setRooms(event.getRooms());
+		entity.setBaths(event.getBaths());
+		entity.setDescription(event.getDescription());
+
+        entity.setEmail(event.getEmail());
+
         entity.setCreated(new Date());
         entity.setUpdated(new Date());
 

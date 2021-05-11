@@ -63,4 +63,7 @@ public class InmuebleSummary {
 
     @Column(length = 2000, columnDefinition = "default ''")
     private String description;
+
+    @Column(name = "email", length = 200)
+    private String email;
 }

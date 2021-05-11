@@ -19,6 +19,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -46,6 +47,7 @@ public class MainView extends AppLayout {
     private static final String TITLE_LOGIN = "Log in";
     private static final String TITLE_SIGN_UP = "Sign up";
     private static final String URL_SIGN_UP = "/ui/signup";
+    private static final String URL_NEW_INMUEBLE = "/ui/createInmueble";
 
     
     private final Tabs menu;
@@ -82,6 +84,7 @@ public class MainView extends AppLayout {
 
         logoDiv.add(home, disclaimerLogoAnchor);
 
+        Div createInmuebleDiv = createInmuebleDiv();
 
         MenuBar profileMenu = createProfileMenu();
         profileMenu.addClassName("menu");
@@ -90,7 +93,12 @@ public class MainView extends AppLayout {
         profileMenuDiv.setId("profileMenu-div");
         profileMenuDiv.setWidthFull();
 
-        layout.add(logoDiv, viewTitle, profileMenuDiv);
+        layout.add(logoDiv, viewTitle);
+        
+        if(createInmuebleDiv != null)
+            layout.add(createInmuebleDiv);
+
+        layout.add(profileMenuDiv);
         
         return layout;
     }
@@ -108,7 +116,7 @@ public class MainView extends AppLayout {
             subMenu.addItem(createLogoutItem(contextPath));
         } else {
             subMenu.addItem(createLoginItem(contextPath));
-            subMenu.addItem(createSingUptItem(contextPath));
+            subMenu.addItem(createSingUpItem(contextPath));
         }
         
         
@@ -193,7 +201,7 @@ public class MainView extends AppLayout {
         return a;
     }
 
-    private Component createSingUptItem(String contextPath){
+    private Component createSingUpItem(String contextPath){
         String href = contextPath;
         VaadinIcon icon = VaadinIcon.USER;
         
@@ -205,8 +213,43 @@ public class MainView extends AppLayout {
         return a;
     }
 
-    private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon, String title) {
+    private Div createInmuebleDiv(){
+        if(!SecurityUtils.isUserLoggedIn())
+            return null;
+
+        Div createInmuebleDiv = new Div();
+        createInmuebleDiv.setId("createInmueble-div");
+
+        String contextPath = VaadinServlet.getCurrent().getServletContext().getContextPath();
+
+        Anchor createInmuebleAnchor = createNewInmuebleAnchor(contextPath);
+        createInmuebleAnchor.setId("createInmueble-button");
+
+        createInmuebleDiv.add(createInmuebleAnchor);
+
+        return createInmuebleDiv;
+    }
+
+    private Anchor createNewInmuebleAnchor(String contextPath){
+        String href = contextPath;
+        VaadinIcon icon = VaadinIcon.PLUS_CIRCLE;
+        
+        href += URL_NEW_INMUEBLE;
+
+        final Anchor a = populateLink(new Anchor(), icon);
+        a.setHref(href);
+        a.setTitle("Añadir inmueble");
+
+        return a;
+    }
+
+    private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon) {
 		a.add(icon.create());
+		return a;
+	}
+
+    private static <T extends HasComponents> T populateLink(T a, VaadinIcon icon, String title) {
+        a = populateLink(a, icon);
 		a.add(" "+title);
 		return a;
 	}

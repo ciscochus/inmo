@@ -7,6 +7,7 @@ import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,24 @@ public class CommandApi {
 
     @PostMapping("/inmueble")
 	public String addInmueble(@RequestBody RequestInmueble request) {
-		commandGateway.sendAndWait(new CreateInmuebleCommand(request.getPrice()));
+
+		if(!StringUtils.hasText(request.getEmail()))
+			return null;
+
+		CreateInmuebleCommand command = new CreateInmuebleCommand();
+
+		command.setTitle(request.getTitle());
+		command.setAddress(request.getAddress());
+		command.setPrice(request.getPrice());
+		command.setArea(request.getArea());
+		command.setGarage(request.getGarage());
+		command.setPool(request.getPool());
+		command.setRooms(request.getRooms());
+		command.setBaths(request.getBaths());
+		command.setDescription(request.getDescription());
+		command.setEmail(request.getEmail());
+
+		commandGateway.sendAndWait(command);
 		return "Saved";
 	}
 

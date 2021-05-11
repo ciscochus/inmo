@@ -25,12 +25,27 @@ public class InmuebleAggregate {
     @AggregateIdentifier
     private UUID id;
 
+    private String title;
+    private String address;
+
     private double price;
+    private double area;
+    private String type;
+
+    private Boolean garage;
+    private Boolean pool;
+
+    private Integer rooms;
+    private Integer baths;
+
+    private String description;
+
+    private String email;
 
     @CommandHandler
     public InmuebleAggregate(CreateInmuebleCommand command){
         log.entry(command);
-        AggregateLifecycle.apply(new InmuebleCreatedEvent(command.id, command.price));
+        AggregateLifecycle.apply(new InmuebleCreatedEvent(command));
     }
 
     @CommandHandler
@@ -43,7 +58,22 @@ public class InmuebleAggregate {
     public void on(InmuebleCreatedEvent event){
         log.entry(event);
         id = event.id;
+        title = event.title;
+        address = event.address;
+        
         price = event.price;
+        area = event.area;
+        type = event.type;
+
+        garage = event.garage;
+        pool = event.pool;
+
+        rooms = event.rooms;
+        baths = event.baths;
+
+        description = event.description;
+
+        email = event.email;
         
         log.trace("new state of aggregate: {}", this);
     }
