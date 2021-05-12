@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
@@ -15,6 +16,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -33,6 +35,9 @@ import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasUrlParameter;
+import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -45,10 +50,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Route(value = "inmuebles", layout = MainView.class)
-@RouteAlias(value = "", layout = MainView.class)
+// @RouteAlias(value = "", layout = MainView.class)
 @PageTitle("Inmuebles")
 @CssImport("./views/inmuebles/inmuebles-view.css")
-public class InmueblesView extends Div {
+public class InmueblesView extends Div implements HasUrlParameter<String>{
+    
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Grid<InmuebleSummary> grid = new Grid<>(InmuebleSummary.class, false);
     public InmuebleSummaryFilter inmuebleSummaryFilter = getFilter();
@@ -75,8 +81,14 @@ public class InmueblesView extends Div {
     private SubscriptionQueryResult<List<InmuebleSummary>, InmuebleSummary> fetchQueryResult;
     private InmuebleFilter filter = new InmuebleFilter(new UUID(0, 0));
 
+    private Dialog inmuebleDetailDialog;
+
+    private final InmuebleService inmuebleService;
+
 
     public InmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService) {
+        this.inmuebleService = inmuebleService;
+        
         ConfigurableFilterDataProvider<InmuebleSummary, Void, InmuebleSummaryFilter> dataProvider = getInmuebleSummaryDataProvider(inmuebleService).withConfigurableFilter();
 
         dataProvider.setFilter(inmuebleSummaryFilter);
@@ -221,8 +233,10 @@ public class InmueblesView extends Div {
         HorizontalLayout acciones = new HorizontalLayout();
 
         //Detail
-        Icon plusIcon = VaadinIcon.PLUS_CIRCLE_O.create();
+        Icon plusIcon = VaadinIcon.EYE.create();
         Button detailButton = new Button(plusIcon);
+
+        detailButton.addClickListener(e -> navegateTo(GuiConst.PAGE_LISTADO_INMUEBLES + "/" + inmueble.getId()));
 
         acciones.add(detailButton);
 
@@ -332,8 +346,12 @@ public class InmueblesView extends Div {
                 this.getUI().get().push(); 
             });
         }
-        
-        
+    }
+
+    private void navegateTo(String url){
+        if(this.getUI().isPresent()){
+            this.getUI().get().navigate(url);
+        }
     }
 
     private void clearForm() {
@@ -379,4 +397,27 @@ public class InmueblesView extends Div {
                     return inmuebleService.getInmuebleSummaryCount(filter);
                 });
     }
+
+    @Override
+    public void setParameter(BeforeEvent event, @OptionalParameter String strId) {
+        if (strId != null) {
+            UUID inmuebleId = UUID.fromString(strId);
+            inmuebleDetailDialog = createDetailDialog(inmuebleService.getInmuebleSummaryById(inmuebleId));
+            inmuebleDetailDialog.open();
+        }
+    }
+
+
+    public Dialog createDetailDialog(InmuebleSummary inmueble){
+        Dialog dialog = new Dialog();
+        dialog.setCloseOnEsc(true);
+
+        if(inmueble == null)
+            return dialog;
+
+        dialog.add(new Span("Precio: "+inmueble.getPrice()));
+
+        return dialog;
+    }
+
 }

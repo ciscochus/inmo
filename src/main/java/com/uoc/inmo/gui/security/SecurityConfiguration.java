@@ -1,11 +1,11 @@
 package com.uoc.inmo.gui.security;
 
+import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.query.entity.user.Role;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -18,14 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableWebSecurity 
 @Configuration 
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
-
-    public static final String LOGIN_PROCESSING_URL = "/ui/login";
-    private static final String LOGIN_FAILURE_URL = "/ui/login?error";
-    private static final String LOGIN_URL = LOGIN_PROCESSING_URL;
-    
-    public static final String LOGOUT_PROCESSING_URL = "/ui/logout";
-    private static final String LOGOUT_SUCCESS_URL = LOGIN_PROCESSING_URL;
-    private static final String INDEX_URL = "/ui/";
 
     private final UserDetailsService userDetailsService;
 
@@ -59,7 +51,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .requestCache().requestCache(new CustomRequestCache()) 
             
             // Restrict access to our application.
-            .and().authorizeRequests().antMatchers("/ui/signup", "/inmueble").permitAll()
+            .and().authorizeRequests().antMatchers("/ui/signup", "/ui/inmuebles", "/ui/inmuebles/*").permitAll()
 
             // Allow all flow internal requests.
             .requestMatchers(SecurityUtils::isFrameworkInternalRequest).permitAll()
@@ -67,12 +59,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             // Allow all requests by logged in users.
             .anyRequest().hasAnyAuthority(Role.getAllRoles())
             .and().formLogin()  
-            .loginPage(LOGIN_URL).permitAll()
-            .loginProcessingUrl(LOGIN_PROCESSING_URL)
-            .successForwardUrl(INDEX_URL)
-            .failureUrl(LOGIN_FAILURE_URL)
-            .and().logout().logoutUrl(LOGOUT_PROCESSING_URL)
-            .logoutSuccessUrl(LOGOUT_SUCCESS_URL); 
+            .loginPage(GuiConst.LOGIN_URL).permitAll()
+            .loginProcessingUrl(GuiConst.LOGIN_PROCESSING_URL)
+            .successForwardUrl(GuiConst.INDEX_URL)
+            .failureUrl(GuiConst.LOGIN_FAILURE_URL)
+            .and().logout().logoutUrl(GuiConst.LOGOUT_PROCESSING_URL)
+            .logoutSuccessUrl(GuiConst.LOGOUT_SUCCESS_URL); 
 
     }
 

@@ -2,6 +2,7 @@ package com.uoc.inmo.query.service.impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
@@ -36,6 +37,16 @@ public class InmuebleServiceImpl implements InmuebleService{
             return Long.valueOf(inmuebleSummaryRepository.count(filter.get().getSpecification())).intValue();
 
         return Long.valueOf(inmuebleSummaryRepository.count()).intValue();
+    }
+
+    @Override
+    public InmuebleSummary getInmuebleSummaryById(UUID id){
+        Optional<InmuebleSummary> entity = inmuebleSummaryRepository.findById(id);
+
+        if(entity.isPresent())
+            return entity.get();
+
+        return null;
     }
 
 }

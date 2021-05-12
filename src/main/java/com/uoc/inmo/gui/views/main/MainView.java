@@ -2,7 +2,7 @@ package com.uoc.inmo.gui.views.main;
 
 import java.util.Optional;
 
-import com.uoc.inmo.gui.security.SecurityConfiguration;
+import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.views.about.AboutView;
 import com.uoc.inmo.gui.views.inmuebles.InmueblesView;
@@ -42,17 +42,6 @@ import com.vaadin.flow.server.VaadinServlet;
 @Push
 public class MainView extends AppLayout {
 
-    private static final String TITLE_LOGOUT = "Log out";
-    private static final String TITLE_LOGIN = "Log in";
-    private static final String TITLE_SIGN_UP = "Sign up";
-    private static final String TITLE_NEW_INMUEBLE = "Añadir inmueble";
-    private static final String TITLE_MIS_INMUEBLES = "Mis inmuebles";
-
-    private static final String URL_SIGN_UP = "/ui/signup";
-    private static final String URL_NEW_INMUEBLE = "/ui/createInmueble";
-    private static final String URL_MIS_INMUEBLES = "/ui/misInmuebles";
-
-    
     private final Tabs menu;
     private H1 viewTitle;
 
@@ -183,10 +172,10 @@ public class MainView extends AppLayout {
 
     private Component createLoginItem(String contextPath){
         String href = contextPath;
-        href += SecurityConfiguration.LOGIN_PROCESSING_URL;
+        href += GuiConst.LOGIN_PROCESSING_URL;
         
         VaadinIcon icon = VaadinIcon.SIGN_IN;
-        String title = TITLE_LOGIN;
+        String title = GuiConst.TITLE_LOGIN;
 
         final Anchor a = populateLink(new Anchor(), icon, title);
         a.setHref(href);
@@ -197,8 +186,8 @@ public class MainView extends AppLayout {
         String href = contextPath;
         VaadinIcon icon = VaadinIcon.SIGN_OUT;
         
-        href += SecurityConfiguration.LOGOUT_PROCESSING_URL;
-        String title = TITLE_LOGOUT;
+        href += GuiConst.LOGOUT_PROCESSING_URL;
+        String title = GuiConst.TITLE_LOGOUT;
 
         final Anchor a = populateLink(new Anchor(), icon, title);
         a.setHref(href);
@@ -208,8 +197,8 @@ public class MainView extends AppLayout {
     private Component createMisInmueblesItem(String contextPath){
         String href = contextPath;
         
-        href += URL_MIS_INMUEBLES;
-        String title = TITLE_MIS_INMUEBLES;
+        href += GuiConst.URL_MIS_INMUEBLES;
+        String title = GuiConst.TITLE_MIS_INMUEBLES;
 
         final Anchor a = new Anchor(href, title);
         return a;
@@ -218,8 +207,8 @@ public class MainView extends AppLayout {
     private Component createNewInmuebleItem(String contextPath){
         String href = contextPath;
         
-        href += URL_NEW_INMUEBLE;
-        String title = TITLE_NEW_INMUEBLE;
+        href += GuiConst.URL_NEW_INMUEBLE;
+        String title = GuiConst.TITLE_NEW_INMUEBLE;
 
         final Anchor a = new Anchor(href, title);
         return a;
@@ -229,8 +218,8 @@ public class MainView extends AppLayout {
         String href = contextPath;
         VaadinIcon icon = VaadinIcon.USER;
         
-        href += URL_SIGN_UP;
-        String title = TITLE_SIGN_UP;
+        href += GuiConst.URL_SIGN_UP;
+        String title = GuiConst.TITLE_SIGN_UP;
 
         final Anchor a = populateLink(new Anchor(), icon, title);
         a.setHref(href);
