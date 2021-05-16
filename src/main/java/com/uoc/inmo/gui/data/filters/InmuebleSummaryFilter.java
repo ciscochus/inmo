@@ -171,4 +171,17 @@ public class InmuebleSummaryFilter {
 
         return rooms;
     }
+
+    public void clear(){
+        this.address = null;
+
+        this.minPrice = null;
+        this.maxPrice = null;
+
+        this.minArea = null;
+        this.maxArea = null;
+
+        this.rooms = null;
+        this.baths = null;
+    }
 }

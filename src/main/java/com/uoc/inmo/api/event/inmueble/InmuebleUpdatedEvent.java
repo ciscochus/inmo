@@ -17,6 +17,7 @@ public class InmuebleUpdatedEvent extends InmuebleCreatedEvent {
         this.rooms = command.rooms;
         this.baths = command.baths;
         this.description = command.description;
+        this.images = command.images;
     }
     
 }

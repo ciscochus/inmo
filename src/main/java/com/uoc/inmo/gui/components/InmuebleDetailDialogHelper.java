@@ -1,11 +1,16 @@
 package com.uoc.inmo.gui.components;
 
+import java.util.List;
+
 import com.uoc.inmo.gui.service.GuiInmuebleService;
+import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -13,6 +18,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import lombok.Data;
 
@@ -33,6 +39,10 @@ public class InmuebleDetailDialogHelper {
         //Imagenes
         Div imagenesDiv = new Div();
         imagenesDiv.setId("imagenes-div");
+
+        Div carousel = getImagesCarousel(inmueble);
+        if(carousel != null)
+            imagenesDiv.add(carousel);
 
         // barra separadora
         
@@ -104,10 +114,90 @@ public class InmuebleDetailDialogHelper {
         // Datos del anunciante
 
 
-        VerticalLayout mainLayout = new VerticalLayout(imagenesDiv, tituloDiv, areaDiv, descriptionDiv, otherPropertiesDiv);
+        VerticalLayout mainLayout = new VerticalLayout(tituloDiv, areaDiv, descriptionDiv, otherPropertiesDiv);
 
-        dialog.add(mainLayout);
+        dialog.add(imagenesDiv, mainLayout);
 
         return dialog;
+    }
+
+    Div getImagesCarousel(InmuebleSummary inmueble){
+
+        List<InmuebleImages> images = inmueble.getImages();
+
+        if(CollectionUtils.isEmpty(images))
+            return null;
+
+        Div carousel = new Div();
+        carousel.addClassNames("carousel", "slide");
+        carousel.getElement().setAttribute("data-ride", "carousel");
+        carousel.setId("detail-carousel");
+
+        Div inner = new Div();
+        inner.addClassName("carousel-inner");
+
+        boolean firstElement = true;
+
+        for (InmuebleImages inmuebleImage : images) {
+            
+            Div item = getCarouselItem(inmuebleImage, firstElement);
+
+            firstElement = false;
+
+            if(item != null)
+                inner.add(item);
+        }
+
+        Anchor prev = new Anchor("#detail-carousel");
+        prev.addClassName("carousel-control-prev");
+        prev.getElement().setAttribute("role","button");
+        prev.getElement().setAttribute("data-slide","prev");
+
+        Span controlPrev = new Span();
+        controlPrev.addClassName("carousel-control-prev-icon");
+        controlPrev.getElement().setAttribute("aria-hidden", "true");
+
+        Span srOnlyPrev = new Span("Anterior");
+        srOnlyPrev.addClassName("sr-only");
+
+        prev.add(controlPrev, srOnlyPrev);
+
+        Anchor next = new Anchor("#detail-carousel");
+        next.addClassName("carousel-control-next");
+        next.getElement().setAttribute("role","button");
+        next.getElement().setAttribute("data-slide","next");
+
+        Span controlNext = new Span();
+        controlNext.addClassName("carousel-control-next-icon");
+        controlNext.getElement().setAttribute("aria-hidden", "true");
+
+        Span srOnlyNext= new Span("Siguiente");
+        srOnlyNext.addClassName("sr-only");
+
+        next.add(controlNext, srOnlyNext);
+
+        carousel.add(inner, prev, next);
+
+        return carousel;
+    }
+
+    private Div getCarouselItem(InmuebleImages inmuebleImage, boolean active){
+
+        Div carouselItem = new Div();
+        carouselItem.addClassName("carousel-item");
+
+        if(active)
+            carouselItem.addClassName("active");
+
+        Image img = InmuebleCardHelper.convertToImageComponent(inmuebleImage);
+
+        if(img == null)
+            return null;
+
+        img.addClassNames("d-block", "w-100");
+
+        carouselItem.add(img);
+
+        return carouselItem;
     }
 }

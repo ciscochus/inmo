@@ -27,6 +27,7 @@ import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import lombok.NonNull;
@@ -68,33 +69,9 @@ public class InmuebleRepositoryProjection {
         entity.setCreated(new Date());
         entity.setUpdated(new Date());
 
-        entity.setImages(new ArrayList<>());
-
-        for (RequestFile requestFile : event.getImages()) {
-
-            Blob content = ConvertionUtils.toBlob(requestFile.getContent());
-
-            if(content != null){
-                InmuebleImages image = new InmuebleImages();
-
-                image.setId(requestFile.getId());
-                image.setName(requestFile.getName());
-                image.setMimeType(requestFile.getMimeType());
-                image.setContent(content);
-                image.setInmueble(entity);
-                
-                image.setCreated(new Date());
-
-                entity.getImages().add(image);
-            }
-
-            
-
-        }
+        entity.setImages(convertToInmuebleImagesList(event.getImages(), entity));
 
         inmuebleSummaryRepository.save(entity);
-
-        
 
         queryUpdateEmitter.emit(CountInmuebleSummariesQuery.class, 
             query -> event.getId().toString().startsWith(""), 
@@ -117,13 +94,15 @@ public class InmuebleRepositoryProjection {
 
             InmuebleSummary inmueble = override(entity.get(), event);
 
+            inmuebleSummaryRepository.save(inmueble);
+
             queryUpdateEmitter.emit(CountInmuebleSummariesQuery.class, 
                 query -> event.getId().toString().startsWith(""), 
                 new CountChangedUpdate());
 
             queryUpdateEmitter.emit(FetchInmuebleSummariesQuery.class,
                 query -> event.getId().toString().startsWith(""),
-                entity);
+                inmueble);
         }
     }
 
@@ -186,6 +165,8 @@ public class InmuebleRepositoryProjection {
         if(StringUtils.hasText(event.getDescription()))
 		    inmueble.setDescription(event.getDescription());
 
+        inmueble.setImages(convertToInmuebleImagesList(event.getImages(), inmueble));
+        
         inmueble.setUpdated(new Date());
 
         return inmueble;
@@ -201,5 +182,33 @@ public class InmuebleRepositoryProjection {
         }
 
         return false;
+    }
+
+    private List<InmuebleImages>  convertToInmuebleImagesList(List<RequestFile> requestList, InmuebleSummary entity){
+        List<InmuebleImages> images = new ArrayList<>();
+        
+        if(CollectionUtils.isEmpty(requestList))
+            return images;
+
+        for (RequestFile requestFile : requestList) {
+
+            Blob content = ConvertionUtils.toBlob(requestFile.getContent());
+
+            if(content != null){
+                InmuebleImages image = new InmuebleImages();
+
+                image.setId(requestFile.getId());
+                image.setName(requestFile.getName());
+                image.setMimeType(requestFile.getMimeType());
+                image.setContent(content);
+                image.setInmueble(entity);
+                
+                image.setCreated(new Date());
+
+                images.add(image);
+            }
+        }
+
+        return images;
     }
 }

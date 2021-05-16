@@ -12,7 +12,6 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.StreamResource;
 
 import org.springframework.util.CollectionUtils;
@@ -95,30 +94,40 @@ public class InmuebleCardHelper {
             return nofoto;
 
         InmuebleImages image = images.get(0);
+
+        Image img = convertToImageComponent(image);
+
+        if(img == null)
+            return nofoto;
         
+
+        Div thumbnail = new Div();
+        thumbnail.addClassName("thumbnail");
+
+        img.addClassName("img-thumbnail");
+
+        thumbnail.add(img);
+        
+        return thumbnail;
+    }
+
+    public static Image convertToImageComponent(InmuebleImages image){
+
         String name = image.getName();
         Blob contentBlob = image.getContent();
         String base64content = ConvertionUtils.toString(contentBlob);
 
         if(base64content == null)
-            return nofoto;
-
-
-        Div thumbnail = new Div();
-        thumbnail.addClassName("thumbnail");
+            return null;
 
         try {
             byte[] imageBytes = Base64.getDecoder().decode(base64content);
             StreamResource resource = new StreamResource(name, () -> new ByteArrayInputStream(imageBytes));
-            Image img = new Image(resource, name);
-            img.addClassName("img-thumbnail");
-
-            thumbnail.add(img);
+            return new Image(resource, name);
         } catch (Exception e) {
             e.printStackTrace();
-            return nofoto;
         }
-        
-        return thumbnail;
+
+        return null;
     }
 }

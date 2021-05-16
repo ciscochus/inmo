@@ -8,6 +8,8 @@ import com.uoc.inmo.query.api.response.ResponseFile;
 public interface GuiInmuebleService {
     
     public RequestInmueble createInmueble(RequestInmueble request);
+    
+    public RequestInmueble updateInmueble(RequestInmueble request);
 
     public boolean deleteInmueble(UUID idInmueble);
 

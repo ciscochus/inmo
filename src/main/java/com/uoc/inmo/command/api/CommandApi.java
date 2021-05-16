@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
 import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
+import com.uoc.inmo.command.inmueble.UpdateInmuebleCommand;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,6 +38,35 @@ public class CommandApi {
 			return null;
 
 		CreateInmuebleCommand command = new CreateInmuebleCommand();
+
+		command.setTitle(request.getTitle());
+		command.setAddress(request.getAddress());
+		command.setPrice(request.getPrice());
+		command.setArea(request.getArea());
+		command.setGarage(request.getGarage());
+		command.setPool(request.getPool());
+		command.setRooms(request.getRooms());
+		command.setBaths(request.getBaths());
+		command.setDescription(request.getDescription());
+		command.setEmail(request.getEmail());
+
+		if(!CollectionUtils.isEmpty(request.getImages()))
+			command.setImages(request.getImages());
+
+		commandGateway.sendAndWait(command);
+		return "Saved";
+	}
+
+	@PutMapping("/inmueble")
+	public String updateInmueble(@RequestBody RequestInmueble request) {
+
+		if(!StringUtils.hasText(request.getEmail()))
+			return null;
+
+		if(request.getId() == null)
+			return null;
+
+		UpdateInmuebleCommand command = new UpdateInmuebleCommand(request.getId());
 
 		command.setTitle(request.getTitle());
 		command.setAddress(request.getAddress());

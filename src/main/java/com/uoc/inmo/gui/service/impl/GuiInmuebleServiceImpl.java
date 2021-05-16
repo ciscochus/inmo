@@ -72,6 +72,18 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
         }
 
         return null;
+    }
+
+    @Override
+    public RequestInmueble updateInmueble(RequestInmueble request) {
+        try {
+            restTemplate.put(createInmuebleUrl, request);
+
+        } catch (Exception e) {
+            return null;
+        }
+
+        return request;
     } 
     
 }

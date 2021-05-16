@@ -23,6 +23,7 @@ import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
@@ -55,103 +56,144 @@ import org.springframework.util.StringUtils;
 public class CreateInmuebleView extends Div {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final GuiInmuebleService guiInmuebleService;
+    public Binder<RequestInmueble> binder;
+    public Label infoLabel = new Label();
+
+    protected final GuiInmuebleService guiInmuebleService;
 
     public CreateInmuebleView(@Autowired GuiInmuebleService guiInmuebleService) {
         this.guiInmuebleService = guiInmuebleService;
-        addCreateInmuebleForm();
+        add(addCreateInmuebleForm());
     }
 
-    public void addCreateInmuebleForm(){
+    public Div addCreateInmuebleForm(){
+        Div formDiv = new Div();
+
         FormLayout formLayout = new FormLayout();
         formLayout.setId("create-inmueble-form-layout");
 
-        Binder<RequestInmueble> binder = new Binder<>();
-        RequestInmueble request = new RequestInmueble();
-        request.setEmail(SecurityUtils.getEmailLoggedUser());
+        binder = new Binder<>();
+        
 
         //Type
+        Label typeLabel = new Label("Tipo");
+        typeLabel.addClassNames("col-sm-2", "col-form-label");
+
         RadioButtonGroup<String> typeRadioGroup = new RadioButtonGroup<>();
-        typeRadioGroup.setLabel("Tipo");
         typeRadioGroup.setItems(RequestInmueble.TYPE_ALQUILER, RequestInmueble.TYPE_VENTA);
         typeRadioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
         typeRadioGroup.setValue(RequestInmueble.TYPE_ALQUILER);
 
+        Div typeDiv = new Div(typeLabel,typeRadioGroup);
+        typeDiv.addClassNames("form-group", "row");
+
         //Title
-        TextField title = new TextField("Título");
+        Label titleLabel = new Label("Título");
+        titleLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextField title = new TextField();
         title.setPlaceholder("Título");
 
+        Div titleDiv = new Div(titleLabel,title);
+        titleDiv.addClassNames("form-group", "row");
+
         //Address
-        TextField address = new TextField("Dirección");
+        Label addressLabel = new Label("Dirección");
+        addressLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextField address = new TextField();
         address.setPlaceholder("Dirección");
 
+        Div addressDiv = new Div(addressLabel,address);
+        addressDiv.addClassNames("form-group", "row");
+
         //Price
-        TextField price = new TextField("Precio");
+        Label priceLabel = new Label("Precio");
+        priceLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextField price = new TextField();
         price.setPlaceholder("");
 
+        Div priceDiv = new Div(priceLabel,price);
+        priceDiv.addClassNames("form-group", "row");
+
         //Area
-        TextField area = new TextField("Area");
+        Label areaLabel = new Label("Superficie");
+        areaLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextField area = new TextField();
         area.setPlaceholder("");
 
+        Div areaDiv = new Div(areaLabel,area);
+        areaDiv.addClassNames("form-group", "row");
+
         //Rooms
-        TextField rooms = new TextField("Habitaciones");
+        Label roomsLabel = new Label("Habitaciones");
+        roomsLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextField rooms = new TextField();
         rooms.setPlaceholder("");
 
+        Div roomsDiv = new Div(roomsLabel,rooms);
+        roomsDiv.addClassNames("form-group", "row");
+
         //Baths
-        TextField baths = new TextField("Baños");
+        Label bathsLabel = new Label("Baños");
+        bathsLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextField baths = new TextField();
         baths.setPlaceholder("");
 
+        Div bathsDiv = new Div(bathsLabel,baths);
+        bathsDiv.addClassNames("form-group", "row");
+
         //Garage
+        Label garageLabel = new Label("Garaje");
+        garageLabel.addClassNames("col-sm-2", "col-form-label");
+
         Checkbox garage = new Checkbox();
-        garage.setLabel("Garaje");
         garage.setValue(false);
 
         //Pool
+        Label poolLabel = new Label("Piscina");
+        poolLabel.addClassNames("col-sm-2", "col-form-label");
+
         Checkbox pool = new Checkbox();
-        pool.setLabel("Piscina");
         pool.setValue(false);
 
+        Div propertiesDiv = new Div(garageLabel,garage,poolLabel,pool);
+        propertiesDiv.addClassNames("form-group", "row");
+
         //Description
-        TextArea description = new TextArea("Descripcion");
+        Label descriptionLabel = new Label("Descripción");
+        descriptionLabel.addClassNames("col-sm-2", "col-form-label");
+
+        TextArea description = new TextArea();
         description.setPlaceholder("Descripcion ...");
 
-        // Info label
-        Label infoLabel = new Label();
+        Div descriptionDiv = new Div(descriptionLabel,description);
+        descriptionDiv.addClassNames("form-group", "row");
 
         //Images
+        Label uploadLabel = new Label("Imágenes");
+        uploadLabel.addClassNames("col-sm-2", "col-form-label");
+
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
         Upload upload = new Upload(buffer);
         upload.setMaxFiles(GuiConst.MAX_IMAGES_UPLOAD);
         upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
-        Div output = new Div();
 
         upload.addSucceededListener(event -> {
             infoLabel.setText("MimeType: "+event.getMIMEType()+", ");
             infoLabel.add("FileName: "+event.getFileName());
-
-            // Component component = createComponent(event.getMIMEType(),
-            //         event.getFileName(),
-            //         buffer.getInputStream(event.getFileName()));
-            // showOutput(event.getFileName(), component, output);
-        });
-        upload.addFileRejectedListener(event -> {
-            // Paragraph component = new Paragraph();
-            // showOutput(event.getErrorMessage(), component, output);
         });
 
-        formLayout.add(typeRadioGroup, title, address, price, area, rooms, baths, garage, pool, description, upload);
+        Div uploadDiv = new Div(uploadLabel,upload);
+        uploadDiv.addClassNames("form-group", "row");
 
-        // Button bar
-        Button save = new Button("Save");
-        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        
-        Button reset = new Button("Reset");
+        formLayout.add(typeDiv, titleDiv, addressDiv, priceDiv, areaDiv, roomsDiv, bathsDiv, propertiesDiv, descriptionDiv, uploadDiv);
 
-        HorizontalLayout actions = new HorizontalLayout();
-        actions.add(save, reset);
-        save.getStyle().set("marginRight", "10px");
-
-        
+        HorizontalLayout actions = getAcciones(buffer);
 
         //Binders
         Binding<RequestInmueble, String> typeBinding = binder.forField(typeRadioGroup)
@@ -194,16 +236,49 @@ public class CreateInmuebleView extends Div {
             .withNullRepresentation(false)
             .bind(RequestInmueble::getPool, RequestInmueble::setPool);
 
+        formDiv.add(formLayout, actions, infoLabel);
 
-        // Click listeners for the buttons
+        return formDiv;
+    }
+
+    public HorizontalLayout getAcciones(MultiFileMemoryBuffer buffer){
+        RequestInmueble request = new RequestInmueble();
+        request.setEmail(SecurityUtils.getEmailLoggedUser());
+
+        // Button bar
+        Button save = getSaveButton(request, buffer);
+
+        Button reset = new Button("Reset");
+        
+        reset.addClickListener(event -> {
+            // clear fields by setting null
+            binder.readBean(null);
+            infoLabel.setText("");
+        });
+
+        HorizontalLayout actions = new HorizontalLayout();
+        actions.add(save, reset);
+        
+        return actions;
+    }
+
+    public Button getSaveButton(RequestInmueble request, MultiFileMemoryBuffer buffer) {
+        
+        Button save = new Button("Save");
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        save.getStyle().set("marginRight", "10px");
+
         save.addClickListener(event -> {
             if (binder.writeBeanIfValid(request)) {
 
                 request.setImages(readImages(buffer));
                 if(guiInmuebleService.createInmueble(request) == null){
                     infoLabel.setText("Error!");
+                    new Notification(GuiConst.NOTIFICATION_SAVE_ERROR, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
                 } else {
                     infoLabel.setText("Saved bean values: " + request);
+                    new Notification(GuiConst.NOTIFICATION_SAVE_OK, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
+                    navegateTo(GuiConst.PAGE_LISTADO_MIS_INMUEBLES);
                 }
             } else {
                 BinderValidationStatus<RequestInmueble> validate = binder.validate();
@@ -215,16 +290,12 @@ public class CreateInmuebleView extends Div {
                 infoLabel.setText("There are errors: " + errorText);
             }
         });
-        reset.addClickListener(event -> {
-            // clear fields by setting null
-            binder.readBean(null);
-            infoLabel.setText("");
-        });
 
-        add(formLayout, actions, infoLabel);
+        return save;
     }
 
-    private List<RequestFile> readImages(MultiFileMemoryBuffer buffer) {
+
+    protected List<RequestFile> readImages(MultiFileMemoryBuffer buffer) {
 
         Set<String> files = buffer.getFiles();
 
@@ -267,6 +338,10 @@ public class CreateInmuebleView extends Div {
     }
 
 
-
+    public void navegateTo(String url){
+        if(this.getUI().isPresent()){
+            this.getUI().get().navigate(url);
+        }
+    }
     
 }

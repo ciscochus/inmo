@@ -305,26 +305,26 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
         }
     }
 
-    private void navegateTo(String url){
+    public void navegateTo(String url){
         if(this.getUI().isPresent()){
             this.getUI().get().navigate(url);
         }
     }
 
     private void clearForm() {
-        inmuebleSummaryFilter = getFilter();
+        inmuebleSummaryFilter.clear();
         
         minPrice.clear();
-        minPrice.setValue(0.0);
+        // minPrice.setValue(0.0);
 
         maxPrice.clear();
-        maxPrice.setValue(0.0);
+        // maxPrice.setValue(0.0);
 
         minArea.clear();
-        minArea.setValue(0.0);
+        // minArea.setValue(0.0);
 
         maxArea.clear();
-        maxArea.setValue(0.0);
+        // maxArea.setValue(0.0);
 
         roomsCheckboxGroup.clear();
         bathsCheckboxGroup.clear();

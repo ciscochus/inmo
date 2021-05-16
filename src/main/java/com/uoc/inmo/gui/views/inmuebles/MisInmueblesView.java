@@ -2,6 +2,7 @@ package com.uoc.inmo.gui.views.inmuebles;
 
 import java.util.UUID;
 
+import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.gui.components.InmuebleDetailDialogHelper;
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.security.SecurityUtils;
@@ -19,7 +20,6 @@ import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouteAlias;
@@ -54,6 +54,8 @@ public class MisInmueblesView extends InmueblesView {
         //Update
         Icon editIcon = VaadinIcon.EDIT.create();
         Button updateButton = new Button(editIcon);
+
+        updateButton.addClickListener(e -> navegateTo(GuiConst.PAGE_UPDATE_INMUEBLE + "/" + inmueble.getId()));
 
         Div updateCol = new Div(updateButton);
         updateCol.addClassName("card-button");

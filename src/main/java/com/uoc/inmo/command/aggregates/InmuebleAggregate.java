@@ -92,6 +92,32 @@ public class InmuebleAggregate {
     }
 
     @EventSourcingHandler
+    public void on(InmuebleUpdatedEvent event){
+        log.entry(event);
+        id = event.id;
+        title = event.title;
+        address = event.address;
+        
+        price = event.price;
+        area = event.area;
+        type = event.type;
+
+        garage = event.garage;
+        pool = event.pool;
+
+        rooms = event.rooms;
+        baths = event.baths;
+
+        description = event.description;
+
+        email = event.email;
+
+        images = event.images;
+        
+        log.trace("new state of aggregate: {}", this);
+    }
+
+    @EventSourcingHandler
     public void on(InmuebleDeletedEvent event){
         log.entry(event);
         id = event.id;
