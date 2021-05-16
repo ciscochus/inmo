@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
+import com.uoc.inmo.query.api.response.ResponseFile;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,9 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
 
     @Value("${service.url.deleteInmueble}")
     private String deleteInmuebleUrl;
+
+    @Value("${service.url.getImage}")
+    private String getImageUrl;
 
     @Override
     public RequestInmueble createInmueble(RequestInmueble request) {
@@ -52,5 +56,22 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
 
         return true;
     }
+
+    @Override
+    public ResponseFile getImage(UUID idImage) {
+        
+        if(idImage == null)
+            return null;
+
+        try {
+            ResponseEntity<ResponseFile> response = restTemplate.getForEntity(getImageUrl+"/"+idImage.toString(), ResponseFile.class);
+            if(response.hasBody())
+                return response.getBody();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    } 
     
 }

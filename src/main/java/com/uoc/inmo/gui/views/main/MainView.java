@@ -14,7 +14,9 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
@@ -32,11 +34,18 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.server.VaadinServlet;
+import com.vaadin.flow.theme.Theme;
+import com.vaadin.flow.theme.lumo.Lumo;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
+@Theme(value = Lumo.class, variant = Lumo.LIGHT)
 @PWA(name = "Inmo", shortName = "Inmo", enableInstallPrompt = false)
+@JavaScript("https://code.jquery.com/jquery-3.5.1.slim.min.js")
+@JavaScript("https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js")
+@StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
+@JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
 @JsModule("./styles/shared-styles.js")
 @CssImport("./views/main/main-view.css")
 @Push
@@ -68,7 +77,7 @@ public class MainView extends AppLayout {
 
         Image logoImg = new Image("/icons/logo_small.png", "Logo");
 
-        Anchor home = new Anchor("/ui/", logoImg);
+        Anchor home = new Anchor(GuiConst.INDEX_URL, logoImg);
         home.setId("logoHome");
 
         Anchor disclaimerLogoAnchor = new Anchor("https://pngtree.com/so/house-icons", "house icons png from pngtree.com");

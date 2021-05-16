@@ -1,25 +1,35 @@
 package com.uoc.inmo.gui.views.inmuebles;
 
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.uoc.inmo.command.api.request.RequestFile;
 import com.uoc.inmo.command.api.request.RequestInmueble;
+import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.entity.user.Role;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.html.NativeButton;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.radiobutton.RadioGroupVariant;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.component.upload.receivers.MultiFileMemoryBuffer;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
@@ -34,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 @Route(value = "createInmueble", layout = MainView.class)
 @RouteAlias(value = "createInmueble", layout = MainView.class)
@@ -103,18 +115,43 @@ public class CreateInmuebleView extends Div {
         TextArea description = new TextArea("Descripcion");
         description.setPlaceholder("Descripcion ...");
 
-        formLayout.add(typeRadioGroup, title, address, price, area, rooms, baths, garage, pool, description);
+        // Info label
+        Label infoLabel = new Label();
+
+        //Images
+        MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
+        Upload upload = new Upload(buffer);
+        upload.setMaxFiles(GuiConst.MAX_IMAGES_UPLOAD);
+        upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
+        Div output = new Div();
+
+        upload.addSucceededListener(event -> {
+            infoLabel.setText("MimeType: "+event.getMIMEType()+", ");
+            infoLabel.add("FileName: "+event.getFileName());
+
+            // Component component = createComponent(event.getMIMEType(),
+            //         event.getFileName(),
+            //         buffer.getInputStream(event.getFileName()));
+            // showOutput(event.getFileName(), component, output);
+        });
+        upload.addFileRejectedListener(event -> {
+            // Paragraph component = new Paragraph();
+            // showOutput(event.getErrorMessage(), component, output);
+        });
+
+        formLayout.add(typeRadioGroup, title, address, price, area, rooms, baths, garage, pool, description, upload);
 
         // Button bar
-        NativeButton save = new NativeButton("Save");
-        NativeButton reset = new NativeButton("Reset");
+        Button save = new Button("Save");
+        save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        
+        Button reset = new Button("Reset");
 
         HorizontalLayout actions = new HorizontalLayout();
         actions.add(save, reset);
         save.getStyle().set("marginRight", "10px");
 
-        // Info label
-        Label infoLabel = new Label();
+        
 
         //Binders
         Binding<RequestInmueble, String> typeBinding = binder.forField(typeRadioGroup)
@@ -157,9 +194,12 @@ public class CreateInmuebleView extends Div {
             .withNullRepresentation(false)
             .bind(RequestInmueble::getPool, RequestInmueble::setPool);
 
+
         // Click listeners for the buttons
         save.addClickListener(event -> {
             if (binder.writeBeanIfValid(request)) {
+
+                request.setImages(readImages(buffer));
                 if(guiInmuebleService.createInmueble(request) == null){
                     infoLabel.setText("Error!");
                 } else {
@@ -183,6 +223,50 @@ public class CreateInmuebleView extends Div {
 
         add(formLayout, actions, infoLabel);
     }
+
+    private List<RequestFile> readImages(MultiFileMemoryBuffer buffer) {
+
+        Set<String> files = buffer.getFiles();
+
+        if(CollectionUtils.isEmpty(files))
+            return new ArrayList<>();
+
+        List<RequestFile> images = new ArrayList<>();
+
+        for(String fileName : buffer.getFiles()) {
+
+            RequestFile requestImage = readImage(fileName, buffer);
+            if(requestImage != null)
+                images.add(requestImage);
+        }
+
+        return images;
+    }
+
+    private RequestFile readImage(String fileName, MultiFileMemoryBuffer buffer){
+
+        try {
+            InputStream inputStream = buffer.getInputStream(fileName);
+            
+            if(inputStream != null){
+                byte[] byteContent = buffer.getInputStream(fileName).readAllBytes();
+                String base64content = Base64.getEncoder().encodeToString(byteContent);
+
+                String mimeType = buffer.getFileData(fileName).getMimeType();
+
+                if(StringUtils.hasText(base64content) && StringUtils.hasText(mimeType)){
+                    return new RequestFile(fileName, mimeType, base64content);
+                }
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
 
     
 }

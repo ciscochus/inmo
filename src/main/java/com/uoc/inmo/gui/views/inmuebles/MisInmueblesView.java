@@ -2,6 +2,7 @@ package com.uoc.inmo.gui.views.inmuebles;
 
 import java.util.UUID;
 
+import com.uoc.inmo.gui.components.InmuebleDetailDialogHelper;
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
@@ -16,7 +17,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -37,27 +37,38 @@ public class MisInmueblesView extends InmueblesView {
 
     private final GuiInmuebleService guiInmuebleService;
 
-    public MisInmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService, @Autowired GuiInmuebleService guiInmuebleService) {
-        super(queryGateway, inmuebleService);
+    public MisInmueblesView(@Autowired QueryGateway queryGateway, 
+                            @Autowired InmuebleService inmuebleService, 
+                            @Autowired InmuebleDetailDialogHelper inmuebleDetailDialogHelper,
+                            @Autowired GuiInmuebleService guiInmuebleService) {
+        super(queryGateway, inmuebleService, inmuebleDetailDialogHelper);
         this.guiInmuebleService = guiInmuebleService;
+        
     }
 
     @Override
-    public HorizontalLayout getCardAcciones(InmuebleSummary inmueble) {
-        HorizontalLayout acciones = super.getCardAcciones(inmueble);
+    public Div getCardAcciones(InmuebleSummary inmueble) {
+        
+        Div acciones = super.getCardAcciones(inmueble);
 
         //Update
         Icon editIcon = VaadinIcon.EDIT.create();
         Button updateButton = new Button(editIcon);
 
-        acciones.add(updateButton);
+        Div updateCol = new Div(updateButton);
+        updateCol.addClassName("card-button");
+
+        acciones.add(updateCol);
 
         //Delete
         Icon deleteIcon = VaadinIcon.TRASH.create();
         Button deleteButton = new Button(deleteIcon);
         deleteButton.addClickListener(e -> deleteConfirmDialog(inmueble.getId()).open());
 
-        acciones.add(deleteButton);
+        Div deleteCol = new Div(deleteButton);
+        deleteCol.addClassName("card-button");
+
+        acciones.add(deleteCol);
 
         return acciones;
     }

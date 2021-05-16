@@ -1,8 +1,10 @@
 package com.uoc.inmo.api.event.inmueble;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.uoc.inmo.api.event.BaseEvent;
+import com.uoc.inmo.command.api.request.RequestFile;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
 
 import lombok.Data;
@@ -26,6 +28,8 @@ public class InmuebleCreatedEvent extends BaseEvent<UUID>{
     public String description;
     public String email;
 
+    public List<RequestFile> images;
+
     public InmuebleCreatedEvent(UUID id){
         super(id);
     }
@@ -44,6 +48,7 @@ public class InmuebleCreatedEvent extends BaseEvent<UUID>{
         this.baths = command.baths;
         this.description = command.description;
         this.email = command.email;
+        this.images = command.images;
     }
     
 }

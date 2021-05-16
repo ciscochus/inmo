@@ -115,7 +115,9 @@ public class SecurityUtils {
             "/icons/**",
             "/images/**",
             "/styles/**",
-            "/h2-console/**"));
+            "/h2-console/**",
+            "/swagger-",
+            "/v2/api"));
     }
 
 }

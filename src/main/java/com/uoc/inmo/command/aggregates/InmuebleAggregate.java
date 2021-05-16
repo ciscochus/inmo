@@ -1,10 +1,12 @@
 package com.uoc.inmo.command.aggregates;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.uoc.inmo.api.event.inmueble.InmuebleCreatedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleDeletedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleUpdatedEvent;
+import com.uoc.inmo.command.api.request.RequestFile;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
 import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
 import com.uoc.inmo.command.inmueble.UpdateInmuebleCommand;
@@ -42,6 +44,8 @@ public class InmuebleAggregate {
     private String description;
 
     private String email;
+
+    private List<RequestFile> images;
 
     @CommandHandler
     public InmuebleAggregate(CreateInmuebleCommand command){
@@ -81,6 +85,8 @@ public class InmuebleAggregate {
         description = event.description;
 
         email = event.email;
+
+        images = event.images;
         
         log.trace("new state of aggregate: {}", this);
     }

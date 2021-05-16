@@ -1,8 +1,10 @@
 package com.uoc.inmo.command.inmueble;
 
+import java.util.List;
 import java.util.UUID;
 
 import com.uoc.inmo.command.BaseCommand;
+import com.uoc.inmo.command.api.request.RequestFile;
 
 import lombok.Data;
 
@@ -25,6 +27,8 @@ public class CreateInmuebleCommand extends BaseCommand<UUID> {
     public String description;
 
     public String email;
+
+    public List<RequestFile> images;
 
     public CreateInmuebleCommand(){
         super(UUID.randomUUID());

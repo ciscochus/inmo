@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
+import com.uoc.inmo.query.api.response.ResponseFile;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 
 public interface InmuebleService {
@@ -14,4 +15,8 @@ public interface InmuebleService {
     public int getInmuebleSummaryCount(Optional<InmuebleSummaryFilter> filter);
 
     public InmuebleSummary getInmuebleSummaryById(UUID id);
+
+    public ResponseFile getImage(UUID id);
+
+    public List<ResponseFile> getInmuebleImages(UUID id);
 }

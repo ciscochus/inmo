@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.uoc.inmo.gui.GuiConst;
+import com.uoc.inmo.gui.components.InmuebleCardHelper;
+import com.uoc.inmo.gui.components.InmuebleDetailDialogHelper;
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
@@ -21,13 +23,10 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.NumberField;
 import com.vaadin.flow.data.binder.Result;
@@ -40,7 +39,6 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RouteAlias;
 
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
@@ -84,10 +82,15 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
     private Dialog inmuebleDetailDialog;
 
     private final InmuebleService inmuebleService;
+    private final InmuebleDetailDialogHelper inmuebleDetailDialogHelper;
 
 
-    public InmueblesView(@Autowired QueryGateway queryGateway, @Autowired InmuebleService inmuebleService) {
+    public InmueblesView(@Autowired QueryGateway queryGateway, 
+                            @Autowired InmuebleService inmuebleService,
+                            @Autowired InmuebleDetailDialogHelper inmuebleDetailDialogHelper) {
+
         this.inmuebleService = inmuebleService;
+        this.inmuebleDetailDialogHelper = inmuebleDetailDialogHelper;
         
         ConfigurableFilterDataProvider<InmuebleSummary, Void, InmuebleSummaryFilter> dataProvider = getInmuebleSummaryDataProvider(inmuebleService).withConfigurableFilter();
 
@@ -118,6 +121,7 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
         splitLayout.setSizeFull();
+        splitLayout.setSplitterPosition(20);
 
         createGridLayout(splitLayout);
         createFilterLayout(splitLayout);
@@ -174,63 +178,13 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
         return new InmuebleSummaryFilter();
     }
 
-    public HorizontalLayout createCard(InmuebleSummary inmueble) {
-        HorizontalLayout card = new HorizontalLayout();
-        card.addClassName("card");
-        card.setSpacing(false);
-        card.getThemeList().add("spacing-s");
-        card.setWidthFull();
-
-        //Image-zone
-        VerticalLayout imageLayout = new VerticalLayout();
-        imageLayout.addClassName("imageLayout");
-
-        //Image-zone
-        VerticalLayout propertiesLayout = new VerticalLayout();
-        propertiesLayout.addClassName("propertiesLayout");
-
-        Span superficie = new Span(inmueble.getArea()+" m2");
-        superficie.addClassName("superficie");
-
-        Span rooms = new Span(inmueble.getRooms()+" hab.");
-        rooms.addClassName("rooms");
-
-        Span baths = new Span(inmueble.getBaths()+" baños");
-        baths.addClassName("baths");
-
-        propertiesLayout.add(superficie, rooms, baths);
-
-        //Center-zone
-        VerticalLayout description = new VerticalLayout();
-        description.addClassName("description");
-
-        Span title = new Span(inmueble.getTitle());
-        title.addClassName("title");
-
-        Span address = new Span(inmueble.getAddress());
-        address.addClassName("address");
-
-        description.add(title, address);
-
-
-        //Right-zone
-        VerticalLayout priceLayout = new VerticalLayout();
-        priceLayout.addClassName("priceLayout");
-        priceLayout.setAlignItems(Alignment.END);
-
-        Span price = new Span(inmueble.getPrice()+" €");
-        price.addClassName("price");
-
-        priceLayout.add(price,getCardAcciones(inmueble));
-
-
-        card.add(imageLayout, propertiesLayout, description, priceLayout);
-
-        return card;
+    public Div createCard(InmuebleSummary inmueble) {
+        return InmuebleCardHelper.createCard(inmueble, getCardAcciones(inmueble));
     }
 
-    public HorizontalLayout getCardAcciones(InmuebleSummary inmueble){
-        HorizontalLayout acciones = new HorizontalLayout();
+    public Div getCardAcciones(InmuebleSummary inmueble){
+        Div acciones = new Div();
+        acciones.addClassNames("actions-row", "row", "justify-content-end", "align-items-end");
 
         //Detail
         Icon plusIcon = VaadinIcon.EYE.create();
@@ -238,7 +192,10 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
 
         detailButton.addClickListener(e -> navegateTo(GuiConst.PAGE_LISTADO_INMUEBLES + "/" + inmueble.getId()));
 
-        acciones.add(detailButton);
+        Div detailCol = new Div(detailButton);
+        detailCol.addClassName("card-button");
+
+        acciones.add(detailCol);
 
         return acciones;
     }
@@ -402,22 +359,9 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
     public void setParameter(BeforeEvent event, @OptionalParameter String strId) {
         if (strId != null) {
             UUID inmuebleId = UUID.fromString(strId);
-            inmuebleDetailDialog = createDetailDialog(inmuebleService.getInmuebleSummaryById(inmuebleId));
+
+            inmuebleDetailDialog = inmuebleDetailDialogHelper.create(inmuebleService.getInmuebleSummaryById(inmuebleId));
             inmuebleDetailDialog.open();
         }
     }
-
-
-    public Dialog createDetailDialog(InmuebleSummary inmueble){
-        Dialog dialog = new Dialog();
-        dialog.setCloseOnEsc(true);
-
-        if(inmueble == null)
-            return dialog;
-
-        dialog.add(new Span("Precio: "+inmueble.getPrice()));
-
-        return dialog;
-    }
-
 }

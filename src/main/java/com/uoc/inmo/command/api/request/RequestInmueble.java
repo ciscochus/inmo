@@ -1,5 +1,6 @@
 package com.uoc.inmo.command.api.request;
 
+import java.util.List;
 import java.util.UUID;
 
 import lombok.Data;
@@ -27,4 +28,6 @@ public class RequestInmueble {
     private String description;
 
     private String email;
+
+    List<RequestFile> images;
 }

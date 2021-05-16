@@ -1,13 +1,18 @@
 package com.uoc.inmo.query.entity.inmueble;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
@@ -66,4 +71,7 @@ public class InmuebleSummary {
 
     @Column(name = "email", length = 200)
     private String email;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "inmueble", fetch = FetchType.EAGER)
+    List<InmuebleImages> images = new ArrayList<>();
 }

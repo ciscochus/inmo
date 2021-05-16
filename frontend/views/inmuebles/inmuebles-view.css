@@ -38,3 +38,42 @@
   box-shadow: var(--lumo-box-shadow-xs);
   padding: calc(var(--lumo-space-s) * 1.5) var(--lumo-space-m);
 }
+
+.inmuebles-view .card .no-foto,
+.inmuebles-view .card .thumbnail {
+  width: 90px;
+  height: 90px;
+  text-align: center;
+}
+
+.inmuebles-view .card .no-foto {
+  width: 90px;
+  height: 90px;
+  background-color: #e7ebef;
+  text-align: center;
+}
+
+.inmuebles-view .card .no-foto > span {
+  position: relative;
+  top: 40%;
+}
+
+.inmuebles-view .card .price-row {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: right;
+}
+
+.inmuebles-view .card .actions-row {
+  height: 80%;
+}
+
+.inmuebles-view .card .card-button{
+  text-align: right;
+  padding-right: 5px;
+}
+
+.inmuebles-view .card label {
+  padding-right: 5px;
+  font-weight: bold;
+}

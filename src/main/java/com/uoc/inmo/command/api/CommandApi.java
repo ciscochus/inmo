@@ -9,6 +9,7 @@ import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,6 +47,9 @@ public class CommandApi {
 		command.setBaths(request.getBaths());
 		command.setDescription(request.getDescription());
 		command.setEmail(request.getEmail());
+
+		if(!CollectionUtils.isEmpty(request.getImages()))
+			command.setImages(request.getImages());
 
 		commandGateway.sendAndWait(command);
 		return "Saved";

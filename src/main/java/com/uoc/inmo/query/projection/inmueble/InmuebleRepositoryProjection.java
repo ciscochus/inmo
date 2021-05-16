@@ -1,5 +1,6 @@
 package com.uoc.inmo.query.projection.inmueble;
 
+import java.sql.Blob;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,12 +13,15 @@ import javax.persistence.TypedQuery;
 import com.uoc.inmo.api.event.inmueble.InmuebleCreatedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleDeletedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleUpdatedEvent;
+import com.uoc.inmo.command.api.request.RequestFile;
 import com.uoc.inmo.query.CountChangedUpdate;
 import com.uoc.inmo.query.CountInmuebleSummariesQuery;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.CountInmuebleSummariesResponse;
+import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
+import com.uoc.inmo.query.utils.ConvertionUtils;
 
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.queryhandling.QueryHandler;
@@ -64,7 +68,33 @@ public class InmuebleRepositoryProjection {
         entity.setCreated(new Date());
         entity.setUpdated(new Date());
 
+        entity.setImages(new ArrayList<>());
+
+        for (RequestFile requestFile : event.getImages()) {
+
+            Blob content = ConvertionUtils.toBlob(requestFile.getContent());
+
+            if(content != null){
+                InmuebleImages image = new InmuebleImages();
+
+                image.setId(requestFile.getId());
+                image.setName(requestFile.getName());
+                image.setMimeType(requestFile.getMimeType());
+                image.setContent(content);
+                image.setInmueble(entity);
+                
+                image.setCreated(new Date());
+
+                entity.getImages().add(image);
+            }
+
+            
+
+        }
+
         inmuebleSummaryRepository.save(entity);
+
+        
 
         queryUpdateEmitter.emit(CountInmuebleSummariesQuery.class, 
             query -> event.getId().toString().startsWith(""), 
