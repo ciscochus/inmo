@@ -49,22 +49,16 @@ public class InmuebleSummary {
     private String type;
 
     @Column(columnDefinition = "default false")
-    private Boolean garage;
+    private Boolean garage = false;
 
     @Column(columnDefinition = "default false")
-    private Boolean pool;
+    private Boolean pool = false;
 
     @Column(columnDefinition = "default 0")
     private int rooms;
 
     @Column(columnDefinition = "default 0")
     private int baths;
-
-    @Column
-    private Date created;
-
-    @Column
-    private Date updated;
 
     @Column(length = 2000, columnDefinition = "default ''")
     private String description;
@@ -74,4 +68,16 @@ public class InmuebleSummary {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "inmueble", fetch = FetchType.EAGER)
     List<InmuebleImages> images = new ArrayList<>();
+
+
+    @Column
+    private Date created;
+
+    @Column
+    private Date updated;
+
+    @Column(columnDefinition = "default false")
+    private Boolean priceChanged = false;
+
+    
 }

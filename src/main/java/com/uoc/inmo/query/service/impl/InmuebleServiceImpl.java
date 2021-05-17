@@ -2,15 +2,19 @@ package com.uoc.inmo.query.service.impl;
 
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.query.api.response.ResponseFile;
+import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
+import com.uoc.inmo.query.entity.inmueble.InmueblePriceHistory;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.repository.InmuebleImagesRepository;
+import com.uoc.inmo.query.repository.InmueblePriceHistoryRepository;
 import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
 import com.uoc.inmo.query.service.InmuebleService;
 import com.uoc.inmo.query.utils.ConvertionUtils;
@@ -31,6 +35,9 @@ public class InmuebleServiceImpl implements InmuebleService{
 
     @NonNull
     private final InmuebleImagesRepository inmuebleImagesRepository;
+
+    @NonNull
+    private final InmueblePriceHistoryRepository inmueblePriceHistoryRepository;
 
     @Override
     public List<InmuebleSummary> fetchInmuebleSummary(int offset, int limit, Optional<InmuebleSummaryFilter> filter){
@@ -84,6 +91,35 @@ public class InmuebleServiceImpl implements InmuebleService{
         return responseList;
     }
 
+    @Override
+    public List<ResponsePrice> getInmueblePriceHistory(UUID inmuebleId) {
+        List<InmueblePriceHistory> entities = inmueblePriceHistoryRepository.findInmueblePriceHistoriesByIdInmuebleOrderByCreatedDesc(inmuebleId);
+        
+        List<ResponsePrice> responseList = new ArrayList<>();
+
+        for (InmueblePriceHistory inmueblePrice : entities) {
+            ResponsePrice response = convertToResponse(inmueblePrice);
+            if(response != null)
+                responseList.add(response);
+        }
+
+        return responseList;
+    }
+
+    private ResponsePrice convertToResponse(InmueblePriceHistory source){
+        if(source == null)
+            return null;
+
+        double price = source.getPrice();
+        Date date = source.getCreated();
+
+        ResponsePrice response = new ResponsePrice();
+        response.setPrice(price);
+        response.setCreated(date);
+
+        return response;
+    }
+
 
     private ResponseFile convertToResponse(InmuebleImages source){
         if(source == null)
@@ -101,4 +137,6 @@ public class InmuebleServiceImpl implements InmuebleService{
 
         return new ResponseFile(id, name, mimeType, content);
     }
+
+    
 }

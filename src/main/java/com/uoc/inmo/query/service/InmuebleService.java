@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.query.api.response.ResponseFile;
+import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 
 public interface InmuebleService {
@@ -19,4 +20,6 @@ public interface InmuebleService {
     public ResponseFile getImage(UUID id);
 
     public List<ResponseFile> getInmuebleImages(UUID id);
+
+	public List<ResponsePrice> getInmueblePriceHistory(UUID inmuebleId);
 }

@@ -1,14 +1,21 @@
 package com.uoc.inmo.gui.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
 import com.uoc.inmo.query.api.response.ResponseFile;
+import com.uoc.inmo.query.api.response.ResponsePrice;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -28,6 +35,9 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
 
     @Value("${service.url.getImage}")
     private String getImageUrl;
+
+    @Value("${service.url.getInmueblePriceHistory}")
+    private String getInmueblePriceHistoryUrl;
 
     @Override
     public RequestInmueble createInmueble(RequestInmueble request) {
@@ -72,6 +82,33 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
         }
 
         return null;
+    }
+
+    @Override
+    public List<ResponsePrice> getInmueblePriceHistory(UUID inmuebleId) {
+        
+        if(inmuebleId == null)
+            return null;
+
+        // RestTemplate restTemplate = new RestTemplate();
+        
+        // MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+    
+            
+        // converter.setSupportedMediaTypes(
+        //             Arrays.asList(new MediaType[]{MediaType.APPLICATION_JSON, MediaType.APPLICATION_OCTET_STREAM}));
+    
+        // restTemplate.setMessageConverters(Arrays.asList(converter, new FormHttpMessageConverter()));
+
+        try {
+            ResponseEntity<ResponsePrice[]> response = restTemplate.getForEntity(getInmueblePriceHistoryUrl+"/"+inmuebleId.toString(), ResponsePrice[].class);
+            if(response.hasBody())
+                return Arrays.asList(response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return new ArrayList<>();
     }
 
     @Override

@@ -1,11 +1,15 @@
 package com.uoc.inmo.gui.components;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.uoc.inmo.gui.service.GuiInmuebleService;
+import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
+import com.uoc.inmo.query.utils.ConvertionUtils;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
@@ -13,13 +17,18 @@ import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.vaadin.pekkam.Canvas;
 
+import elemental.json.Json;
+import elemental.json.JsonArray;
+import elemental.json.JsonObject;
 import lombok.Data;
 
 @Service
@@ -44,7 +53,25 @@ public class InmuebleDetailDialogHelper {
         if(carousel != null)
             imagenesDiv.add(carousel);
 
+        dialog.add(imagenesDiv);
         // barra separadora
+
+        // Historico precios
+
+        Button openChartButton = new Button(VaadinIcon.LINE_CHART.create());
+        if(inmueble.getPriceChanged()){
+            Div priceChartDiv = getPriceChart(inmueble);
+            dialog.add(priceChartDiv);
+            openChartButton.setClassName("open-chart-button");
+        } else {
+            openChartButton.setEnabled(false);
+        }
+
+        dialog.add(openChartButton);
+
+        
+        
+        
         
         // Titulo
 
@@ -116,7 +143,7 @@ public class InmuebleDetailDialogHelper {
 
         VerticalLayout mainLayout = new VerticalLayout(tituloDiv, areaDiv, descriptionDiv, otherPropertiesDiv);
 
-        dialog.add(imagenesDiv, mainLayout);
+        dialog.add(mainLayout);
 
         return dialog;
     }
@@ -199,5 +226,48 @@ public class InmuebleDetailDialogHelper {
         carouselItem.add(img);
 
         return carouselItem;
+    }
+
+    Div getPriceChart(InmuebleSummary inmueble){
+        Div priceChartDiv = new Div();
+        priceChartDiv.setId("priceChart");
+
+        Canvas canvas = new Canvas(300, 100);
+        canvas.setId("canvas-price");
+
+        priceChartDiv.add(canvas);
+
+        Span data = new Span(getInmueblePriceHistory(inmueble.getId()));
+        data.addClassName("invisible");
+        data.setId("priceChart-data");
+
+        priceChartDiv.add(data);
+
+        return priceChartDiv;
+    }
+
+    String getInmueblePriceHistory(UUID inmuebleId){
+        List<ResponsePrice> history = guiInmuebleService.getInmueblePriceHistory(inmuebleId);
+
+        if(CollectionUtils.isEmpty(history))
+            return "";
+
+        JsonArray array = Json.createArray();
+
+        for (ResponsePrice responsePrice : history) {
+            array.set(array.length(), getHistoryItem(responsePrice));
+        }
+        
+        return array.toJson();
+    }
+
+    JsonObject getHistoryItem(ResponsePrice responsePrice){
+
+        JsonObject item = Json.createObject();
+        
+        item.put("x", ConvertionUtils.dateToString(responsePrice.getCreated()));
+        item.put("y", responsePrice.getPrice());
+
+        return item;
     }
 }

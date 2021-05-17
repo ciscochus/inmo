@@ -107,6 +107,7 @@ public class SecurityUtils {
             "/ui/sw.js",
             "/error",
             "/ui/icons/",
+            "/ui/js/",
             "/favicon.ico",
             "/robots.txt",
             "/manifest.webmanifest",
@@ -117,7 +118,8 @@ public class SecurityUtils {
             "/styles/**",
             "/h2-console/**",
             "/swagger-",
-            "/v2/api"));
+            "/v2/api",
+            "/api/"));
     }
 
 }

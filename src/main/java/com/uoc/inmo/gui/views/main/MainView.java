@@ -46,7 +46,10 @@ import com.vaadin.flow.theme.lumo.Lumo;
 @JavaScript("https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js")
 @StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
 @JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
+@JavaScript("https://cdn.jsdelivr.net/npm/chart.js")
+@JavaScript("https://drive.google.com/file/d/156tv84L9CKrXR717NOxaF4OnDnoRbmvc/view?usp=sharing")
 @JsModule("./styles/shared-styles.js")
+@JsModule("./views/main/js/priceChart.js")
 @CssImport("./views/main/main-view.css")
 @Push
 public class MainView extends AppLayout {
@@ -58,8 +61,6 @@ public class MainView extends AppLayout {
         setPrimarySection(Section.DRAWER);
         addToNavbar(true, createHeaderContent());
         menu = createMenu();
-        // addToDrawer(createDrawerContent(menu));+
-        
     }
 
     private Component createHeaderContent() {
@@ -245,4 +246,10 @@ public class MainView extends AppLayout {
 		a.add(" "+title);
 		return a;
 	}
+
+    public void addJavaScript(String url){
+        if(this.getUI().isPresent()){
+            this.getUI().get().getPage().addJavaScript(url);
+        }
+    }
 }

@@ -2,6 +2,9 @@ package com.uoc.inmo.query.utils;
 
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.sql.rowset.serial.SerialBlob;
 
@@ -31,5 +34,13 @@ public class ConvertionUtils {
         } 
 
         return null;
+    }
+
+    public static String dateToString(Date source){
+        if(source == null)
+            return null;
+
+        DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+        return df.format(source);
     }
 }

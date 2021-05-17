@@ -19,7 +19,9 @@ import com.uoc.inmo.query.CountInmuebleSummariesQuery;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.CountInmuebleSummariesResponse;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
+import com.uoc.inmo.query.entity.inmueble.InmueblePriceHistory;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
+import com.uoc.inmo.query.repository.InmueblePriceHistoryRepository;
 import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
 import com.uoc.inmo.query.utils.ConvertionUtils;
 
@@ -43,6 +45,9 @@ public class InmuebleRepositoryProjection {
     private final InmuebleSummaryRepository inmuebleSummaryRepository;
 
     @NonNull
+    private final InmueblePriceHistoryRepository inmueblePriceHistoryRepository;
+
+    @NonNull
     private final QueryUpdateEmitter queryUpdateEmitter;
 
     @NonNull
@@ -62,6 +67,7 @@ public class InmuebleRepositoryProjection {
 		entity.setPool(event.getPool());
 		entity.setRooms(event.getRooms());
 		entity.setBaths(event.getBaths());
+        entity.setType(event.getType());
 		entity.setDescription(event.getDescription());
 
         entity.setEmail(event.getEmail());
@@ -93,6 +99,13 @@ public class InmuebleRepositoryProjection {
             boolean isPriceChanged = isPriceChanged(entity.get(), event);
 
             InmuebleSummary inmueble = override(entity.get(), event);
+
+            if(isPriceChanged){
+                inmueble.setPriceChanged(true);
+
+                InmueblePriceHistory history = new InmueblePriceHistory(event.getId(), inmueble.getPrice(), inmueble.getUpdated());
+                inmueblePriceHistoryRepository.save(history); 
+            }
 
             inmuebleSummaryRepository.save(inmueble);
 
@@ -161,6 +174,7 @@ public class InmuebleRepositoryProjection {
 		inmueble.setPool(event.getPool());
 		inmueble.setRooms(event.getRooms());
 		inmueble.setBaths(event.getBaths());
+        inmueble.setType(event.getType());
 
         if(StringUtils.hasText(event.getDescription()))
 		    inmueble.setDescription(event.getDescription());
