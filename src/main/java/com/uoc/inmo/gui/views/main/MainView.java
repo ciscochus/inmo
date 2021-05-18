@@ -47,9 +47,8 @@ import com.vaadin.flow.theme.lumo.Lumo;
 @StyleSheet("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css")
 @JavaScript("https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js")
 @JavaScript("https://cdn.jsdelivr.net/npm/chart.js")
-@JavaScript("https://drive.google.com/file/d/156tv84L9CKrXR717NOxaF4OnDnoRbmvc/view?usp=sharing")
+@CssImport("./views/main/js/priceChart.js")
 @JsModule("./styles/shared-styles.js")
-@JsModule("./views/main/js/priceChart.js")
 @CssImport("./views/main/main-view.css")
 @Push
 public class MainView extends AppLayout {

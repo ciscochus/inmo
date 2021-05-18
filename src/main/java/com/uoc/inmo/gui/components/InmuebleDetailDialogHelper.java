@@ -9,6 +9,7 @@ import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.utils.ConvertionUtils;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -63,6 +64,9 @@ public class InmuebleDetailDialogHelper {
             Div priceChartDiv = getPriceChart(inmueble);
             dialog.add(priceChartDiv);
             openChartButton.setClassName("open-chart-button");
+            openChartButton.addClickListener(e -> {
+                UI.getCurrent().getPage().executeJs("togglePriceChart()");
+            });
         } else {
             openChartButton.setEnabled(false);
         }

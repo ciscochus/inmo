@@ -1,9 +1,7 @@
 
 
 
-var PriceChart = {};
-
-    PriceChart.createPriceChart = function(){
+window.createPriceChart = function(){
         var rawData = JSON.parse($("#priceChart-data").text());
         var config = {
             type: 'line',
@@ -31,7 +29,7 @@ var PriceChart = {};
         $("#canvas-price").prop("init",true);
     };
     
-    PriceChart.togglePriceChart = function(){
+window.togglePriceChart = function(){
         if($("#canvas-price").prop("init") === undefined){
             createPriceChart();
         } else {
