@@ -4,8 +4,11 @@ package com.uoc.inmo.command.api;
 import java.util.UUID;
 
 import com.uoc.inmo.command.api.request.RequestInmueble;
+import com.uoc.inmo.command.api.request.RequestInmuebleSubscription;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
+import com.uoc.inmo.command.inmueble.CreateInmuebleSubscriptionCommand;
 import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
+import com.uoc.inmo.command.inmueble.DeleteInmuebleSubscriptionCommand;
 import com.uoc.inmo.command.inmueble.UpdateInmuebleCommand;
 
 import org.axonframework.commandhandling.gateway.CommandGateway;
@@ -17,12 +20,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@RestController(value = "/api/command")
+@RestController
+@RequestMapping(value = "/api/command")
 @RequiredArgsConstructor
 public class CommandApi {
     
@@ -86,9 +91,25 @@ public class CommandApi {
 		return "Saved";
 	}
 
+
+
     @DeleteMapping("/inmueble/{id}")
     public String deleteInmueble(@PathVariable(value = "id") UUID inmuebleId) {
 		commandGateway.sendAndWait(new DeleteInmuebleCommand(inmuebleId));
+		return "Removed";
+	}
+
+	@PostMapping("/inmuebleSubscription")
+	public Boolean addInmuebleSubcription(@RequestBody RequestInmuebleSubscription request) {
+		commandGateway.sendAndWait(new CreateInmuebleSubscriptionCommand(request.getIdInmueble(), request.getEmail()));
+		return true;
+	}
+
+	@PostMapping("/deleteInmuebleSubscription")
+    public String deleteInmuebleSubscription(@RequestBody RequestInmuebleSubscription request) {
+		commandGateway.sendAndWait(new DeleteInmuebleSubscriptionCommand(request.getSubscriptionId(), 
+																		request.getIdInmueble(), 
+																		request.getEmail()));
 		return "Removed";
 	}
 }

@@ -5,10 +5,14 @@ import java.util.UUID;
 
 import com.uoc.inmo.api.event.inmueble.InmuebleCreatedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleDeletedEvent;
+import com.uoc.inmo.api.event.inmueble.InmuebleSubscriptionCreatedEvent;
+import com.uoc.inmo.api.event.inmueble.InmuebleSubscriptionDeletedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleUpdatedEvent;
 import com.uoc.inmo.command.api.request.RequestFile;
 import com.uoc.inmo.command.inmueble.CreateInmuebleCommand;
+import com.uoc.inmo.command.inmueble.CreateInmuebleSubscriptionCommand;
 import com.uoc.inmo.command.inmueble.DeleteInmuebleCommand;
+import com.uoc.inmo.command.inmueble.DeleteInmuebleSubscriptionCommand;
 import com.uoc.inmo.command.inmueble.UpdateInmuebleCommand;
 
 import org.axonframework.commandhandling.CommandHandler;
@@ -64,6 +68,18 @@ public class InmuebleAggregate {
         log.entry(command);
         AggregateLifecycle.apply(new InmuebleDeletedEvent(command.id));
     }
+
+    // @CommandHandler
+    // public void handle(CreateInmuebleSubscriptionCommand command){
+    //     log.entry(command);
+    //     AggregateLifecycle.apply(new InmuebleSubscriptionCreatedEvent(command));
+    // }
+
+    // @CommandHandler
+    // public void handle(DeleteInmuebleSubscriptionCommand command){
+    //     log.entry(command);
+    //     AggregateLifecycle.apply(new InmuebleSubscriptionDeletedEvent(command));
+    // }
 
     @EventSourcingHandler
     public void on(InmuebleCreatedEvent event){
@@ -124,5 +140,22 @@ public class InmuebleAggregate {
         AggregateLifecycle.markDeleted();
         log.trace("new state of aggregate: {}", this);
     }
+
+    // @EventSourcingHandler
+    // public void on(InmuebleSubscriptionCreatedEvent event){
+    //     log.entry(event);
+    //     // id = event.id;
+    //     // inmuebleId = event.inmuebleId;
+    //     // email = event.email;
+        
+    //     // log.trace("new state of aggregate: {}", this);
+    // }
+
+    // @EventSourcingHandler
+    // public void on(InmuebleSubscriptionDeletedEvent event){
+    //     log.entry(event);
+    //     // id = event.id;
+    //     // log.trace("new state of aggregate: {}", this);
+    // }
 
 }

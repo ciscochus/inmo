@@ -12,16 +12,22 @@ import javax.persistence.TypedQuery;
 
 import com.uoc.inmo.api.event.inmueble.InmuebleCreatedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleDeletedEvent;
+import com.uoc.inmo.api.event.inmueble.InmuebleSubscriptionCreatedEvent;
+import com.uoc.inmo.api.event.inmueble.InmuebleSubscriptionDeletedEvent;
 import com.uoc.inmo.api.event.inmueble.InmuebleUpdatedEvent;
 import com.uoc.inmo.command.api.request.RequestFile;
+import com.uoc.inmo.notification.service.NotificationService;
 import com.uoc.inmo.query.CountChangedUpdate;
 import com.uoc.inmo.query.CountInmuebleSummariesQuery;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.CountInmuebleSummariesResponse;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmueblePriceHistory;
+import com.uoc.inmo.query.entity.inmueble.InmuebleSubscription;
+import com.uoc.inmo.query.entity.inmueble.InmuebleSubscriptionPK;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.repository.InmueblePriceHistoryRepository;
+import com.uoc.inmo.query.repository.InmuebleSubscriptionRepository;
 import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
 import com.uoc.inmo.query.utils.ConvertionUtils;
 
@@ -46,6 +52,12 @@ public class InmuebleRepositoryProjection {
 
     @NonNull
     private final InmueblePriceHistoryRepository inmueblePriceHistoryRepository;
+
+    @NonNull
+    private final InmuebleSubscriptionRepository inmuebleSubscriptionRepository;
+
+    @NonNull
+    private final NotificationService notificationService;
 
     @NonNull
     private final QueryUpdateEmitter queryUpdateEmitter;
@@ -97,6 +109,8 @@ public class InmuebleRepositoryProjection {
         if(entity.isPresent()){
 
             boolean isPriceChanged = isPriceChanged(entity.get(), event);
+            double oldPrice = entity.get().getPrice();
+            double newPrice = event.getPrice();
 
             InmuebleSummary inmueble = override(entity.get(), event);
 
@@ -105,6 +119,8 @@ public class InmuebleRepositoryProjection {
 
                 InmueblePriceHistory history = new InmueblePriceHistory(event.getId(), inmueble.getPrice(), inmueble.getUpdated());
                 inmueblePriceHistoryRepository.save(history); 
+
+                notificarCambioPrecio(inmueble, oldPrice, newPrice);
             }
 
             inmuebleSummaryRepository.save(inmueble);
@@ -135,6 +151,29 @@ public class InmuebleRepositoryProjection {
                 entity.get());
         }
         
+    }
+
+    @EventHandler
+    public void on(InmuebleSubscriptionCreatedEvent event){
+        InmuebleSubscription entity = new InmuebleSubscription(event.inmuebleId, 
+                                                                event.email, 
+                                                                event.id);
+
+        inmuebleSubscriptionRepository.saveAndFlush(entity);
+
+        log.trace("new inmueble subscription projection saved: {}", entity);
+    }
+
+    @EventHandler
+    public void on(InmuebleSubscriptionDeletedEvent event){
+
+        Optional<InmuebleSubscription> entity = inmuebleSubscriptionRepository
+                                                    .findById(new InmuebleSubscriptionPK(event.inmuebleId, 
+                                                                                        event.email));
+
+        if(entity.isPresent()){
+            inmuebleSubscriptionRepository.delete(entity.get());
+        }
     }
 
     @QueryHandler
@@ -224,5 +263,9 @@ public class InmuebleRepositoryProjection {
         }
 
         return images;
+    }
+
+    private void notificarCambioPrecio(InmuebleSummary inmueble, double oldPrice, double newPrice){
+            notificationService.notificarCambioPrecio(inmueble, oldPrice, newPrice);
     }
 }

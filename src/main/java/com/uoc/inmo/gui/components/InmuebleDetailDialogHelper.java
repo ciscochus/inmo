@@ -3,6 +3,8 @@ package com.uoc.inmo.gui.components;
 import java.util.List;
 import java.util.UUID;
 
+import com.uoc.inmo.gui.GuiConst;
+import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
 import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
@@ -19,6 +21,7 @@ import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
@@ -57,26 +60,37 @@ public class InmuebleDetailDialogHelper {
         dialog.add(imagenesDiv);
         // barra separadora
 
-        // Historico precios
 
-        Button openChartButton = new Button(VaadinIcon.LINE_CHART.create());
-        if(inmueble.getPriceChanged()){
-            Div priceChartDiv = getPriceChart(inmueble);
-            dialog.add(priceChartDiv);
-            openChartButton.setClassName("open-chart-button");
-            openChartButton.addClickListener(e -> {
-                UI.getCurrent().getPage().executeJs("togglePriceChart()");
-            });
-        } else {
-            openChartButton.setEnabled(false);
+        if(SecurityUtils.isUserLoggedIn()){
+            // Historico precios
+
+            Button openChartButton = new Button(VaadinIcon.LINE_CHART.create());
+            if(inmueble.getPriceChanged()){
+                Div priceChartDiv = getPriceChart(inmueble);
+                dialog.add(priceChartDiv);
+                openChartButton.setClassName("open-chart-button");
+                openChartButton.addClickListener(e -> {
+                    UI.getCurrent().getPage().executeJs("togglePriceChart()");
+                });
+            } else {
+                openChartButton.setEnabled(false);
+            }
+
+            Checkbox subscribeChecbox = new Checkbox("Avísame si cambia de precio");
+            subscribeChecbox.setId("subscribeSwitch");
+
+            Boolean isSubscribed = guiInmuebleService.checkInmuebleSubscription(inmueble.getId(), SecurityUtils.getEmailLoggedUser());
+
+            subscribeChecbox.setValue(isSubscribed);
+            subscribeChecbox.addValueChangeListener(e -> subscribeInmueble(inmueble, e.getValue()));
+
+            Div controlBar = new Div(subscribeChecbox, openChartButton);
+
+            controlBar.addClassName("controlBar");
+
+            dialog.add(controlBar);
         }
 
-        dialog.add(openChartButton);
-
-        
-        
-        
-        
         // Titulo
 
         HorizontalLayout tituloLayout = new HorizontalLayout();
@@ -152,12 +166,35 @@ public class InmuebleDetailDialogHelper {
         return dialog;
     }
 
+    private void subscribeInmueble(InmuebleSummary inmueble, Boolean value) {
+        String email = SecurityUtils.getEmailLoggedUser();
+        UUID idInmueble = inmueble.getId();
+
+        Boolean response = false;
+        if(value){
+           response = guiInmuebleService.addInmuebleSubscription(idInmueble, email);
+        } else {
+            response = guiInmuebleService.deleteInmuebleSubscription(idInmueble, email);
+        }
+
+        String mensaje = "Se ha producido un error";
+        if(response){
+            mensaje = value ? "Subscripción activada" : "Subscripción desactivada";
+        }
+        
+        new Notification(mensaje, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
+    }
+
     Div getImagesCarousel(InmuebleSummary inmueble){
+
+        Div nofoto = new Div();
+        nofoto.addClassName("no-foto");
+        nofoto.add(new Span("Sin fotos"));
 
         List<InmuebleImages> images = inmueble.getImages();
 
         if(CollectionUtils.isEmpty(images))
-            return null;
+            return nofoto;
 
         Div carousel = new Div();
         carousel.addClassNames("carousel", "slide");

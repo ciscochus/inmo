@@ -22,4 +22,6 @@ public interface InmuebleService {
     public List<ResponseFile> getInmuebleImages(UUID id);
 
 	public List<ResponsePrice> getInmueblePriceHistory(UUID inmuebleId);
+
+    public Boolean checkInmuebleSubscription(UUID inmuebleId, String email);
 }

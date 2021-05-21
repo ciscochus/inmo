@@ -1,8 +1,5 @@
 package com.uoc.inmo.query;
 
-import org.axonframework.config.EventProcessingConfigurer;
-import org.axonframework.eventhandling.TrackingEventProcessorConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration

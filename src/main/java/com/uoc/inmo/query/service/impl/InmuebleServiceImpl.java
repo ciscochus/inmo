@@ -12,9 +12,12 @@ import com.uoc.inmo.query.api.response.ResponseFile;
 import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmueblePriceHistory;
+import com.uoc.inmo.query.entity.inmueble.InmuebleSubscription;
+import com.uoc.inmo.query.entity.inmueble.InmuebleSubscriptionPK;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.repository.InmuebleImagesRepository;
 import com.uoc.inmo.query.repository.InmueblePriceHistoryRepository;
+import com.uoc.inmo.query.repository.InmuebleSubscriptionRepository;
 import com.uoc.inmo.query.repository.InmuebleSummaryRepository;
 import com.uoc.inmo.query.service.InmuebleService;
 import com.uoc.inmo.query.utils.ConvertionUtils;
@@ -38,6 +41,9 @@ public class InmuebleServiceImpl implements InmuebleService{
 
     @NonNull
     private final InmueblePriceHistoryRepository inmueblePriceHistoryRepository;
+
+    @NonNull
+    private final InmuebleSubscriptionRepository inmuebleSubscriptionRepository;
 
     @Override
     public List<InmuebleSummary> fetchInmuebleSummary(int offset, int limit, Optional<InmuebleSummaryFilter> filter){
@@ -136,6 +142,12 @@ public class InmuebleServiceImpl implements InmuebleService{
         String content = new String(Base64.getDecoder().decode(base64Content));
 
         return new ResponseFile(id, name, mimeType, content);
+    }
+
+    @Override
+    public Boolean checkInmuebleSubscription(UUID inmuebleId, String email) {
+        Optional<InmuebleSubscription> entity = inmuebleSubscriptionRepository.findById(new InmuebleSubscriptionPK(inmuebleId, email));
+        return entity.isPresent();
     }
 
     

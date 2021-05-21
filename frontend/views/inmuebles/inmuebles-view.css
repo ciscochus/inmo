@@ -46,17 +46,27 @@
   text-align: center;
 }
 
-.inmuebles-view .card .no-foto {
-  width: 90px;
-  height: 90px;
+.no-foto {
   background-color: #e7ebef;
   text-align: center;
 }
 
-.inmuebles-view .card .no-foto > span {
+.no-foto > span {
   position: relative;
   top: 40%;
 }
+
+.inmuebles-view .card .no-foto {
+  width: 90px;
+  height: 90px;
+}
+
+#inmueble-detail-dialog .no-foto{
+  width: 100%;
+  height: 250px;
+}
+
+
 
 .inmuebles-view .card .price-row {
   font-size: 20px;
@@ -78,6 +88,13 @@
   font-weight: bold;
 }
 
+#filter-layout {
+  display: flex;
+  flex-direction: column;
+
+}
+
 #filter {
   padding: 10px;
+  flex-grow: 1;
 }
