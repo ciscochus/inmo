@@ -14,6 +14,7 @@ import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.filter.inmueble.InmuebleFilter;
 import com.uoc.inmo.query.service.InmuebleService;
+import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
@@ -35,6 +36,8 @@ import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.DataProviderListener;
+import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.OptionalParameter;
@@ -56,6 +59,7 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
     
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private Grid<InmuebleSummary> grid = new Grid<>(InmuebleSummary.class, false);
+    private Div noItemsDiv = new Div();
     public InmuebleSummaryFilter inmuebleSummaryFilter = getFilter();
 
     private NumberField minPrice;
@@ -94,6 +98,17 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
         this.inmuebleDetailDialogHelper = inmuebleDetailDialogHelper;
         
         ConfigurableFilterDataProvider<InmuebleSummary, Void, InmuebleSummaryFilter> dataProvider = getInmuebleSummaryDataProvider(inmuebleService).withConfigurableFilter();
+
+        DataProviderListener<InmuebleSummary> listener = ( e -> {
+            if(dataProvider.size(new Query<>()) == 0)
+                noItemsDiv.removeClassName("hidden");
+            else
+                noItemsDiv.addClassName("hidden");
+        });
+
+        listener.onDataChange(null);
+
+        dataProvider.addDataProviderListener(listener);
 
         dataProvider.setFilter(inmuebleSummaryFilter);
 
@@ -291,7 +306,10 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
         wrapper.setId("grid-wrapper");
         wrapper.setWidthFull();
         
-        wrapper.add(grid);
+        noItemsDiv = new Div(new Text("No hay resultados"));
+        noItemsDiv.addClassNames("warning");
+
+        wrapper.add(noItemsDiv, grid);
 
         splitLayout.addToSecondary(wrapper);
     }

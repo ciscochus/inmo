@@ -53,7 +53,6 @@ public class RegisterUserView extends Div {
 
     public RegisterUserView(@Autowired UserService userService) {
         this.userService  = userService;
-        // addRegisterForm();
 
         add(createRegisterForm());
         add(createButtonLayout());

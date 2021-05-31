@@ -15,6 +15,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Shortcuts;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
@@ -86,7 +87,7 @@ public class MisInmueblesView extends InmueblesView {
 
     public Dialog deleteConfirmDialog(UUID inmuebleId){
         Dialog dialog = new Dialog();
-        dialog.add(new Text("Esta acción no puede deshacerse. ¿Desea continuar?"));
+
         dialog.setCloseOnEsc(true);
         dialog.setCloseOnOutsideClick(false);
 
@@ -94,15 +95,25 @@ public class MisInmueblesView extends InmueblesView {
             deleteInmueble(inmuebleId);
             dialog.close();
         });
+
+        confirmButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
         Button cancelButton = new Button("Cancelar", event -> {
             dialog.close();
         });
+
         // Cancel action on ESC press
         Shortcuts.addShortcutListener(dialog, () -> {
             dialog.close();
         }, Key.ESCAPE);
 
-        dialog.add(new Div(confirmButton, cancelButton));
+        Div buttons = new Div(confirmButton, cancelButton);
+        buttons.setClassName("confirm-buttons");
+
+        Div dialogContentDiv = new Div(new Text("Esta acción no puede deshacerse. ¿Desea continuar?"), buttons);
+        dialogContentDiv.setClassName("confirmDialog");
+
+        dialog.add(dialogContentDiv);
 
         return dialog;
     }

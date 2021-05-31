@@ -69,18 +69,6 @@ public class InmuebleAggregate {
         AggregateLifecycle.apply(new InmuebleDeletedEvent(command.id));
     }
 
-    // @CommandHandler
-    // public void handle(CreateInmuebleSubscriptionCommand command){
-    //     log.entry(command);
-    //     AggregateLifecycle.apply(new InmuebleSubscriptionCreatedEvent(command));
-    // }
-
-    // @CommandHandler
-    // public void handle(DeleteInmuebleSubscriptionCommand command){
-    //     log.entry(command);
-    //     AggregateLifecycle.apply(new InmuebleSubscriptionDeletedEvent(command));
-    // }
-
     @EventSourcingHandler
     public void on(InmuebleCreatedEvent event){
         log.entry(event);
@@ -140,22 +128,5 @@ public class InmuebleAggregate {
         AggregateLifecycle.markDeleted();
         log.trace("new state of aggregate: {}", this);
     }
-
-    // @EventSourcingHandler
-    // public void on(InmuebleSubscriptionCreatedEvent event){
-    //     log.entry(event);
-    //     // id = event.id;
-    //     // inmuebleId = event.inmuebleId;
-    //     // email = event.email;
-        
-    //     // log.trace("new state of aggregate: {}", this);
-    // }
-
-    // @EventSourcingHandler
-    // public void on(InmuebleSubscriptionDeletedEvent event){
-    //     log.entry(event);
-    //     // id = event.id;
-    //     // log.trace("new state of aggregate: {}", this);
-    // }
 
 }

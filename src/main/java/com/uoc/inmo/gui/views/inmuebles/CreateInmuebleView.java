@@ -21,6 +21,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dependency.CssImport;
 import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.notification.Notification;
@@ -68,118 +69,150 @@ public class CreateInmuebleView extends Div {
 
     public Div addCreateInmuebleForm(){
         Div formDiv = new Div();
+        formDiv.setId("create-inmueble-container");
+        formDiv.addClassName("container");
 
-        FormLayout formLayout = new FormLayout();
+        Div formLayout = new Div();
         formLayout.setId("create-inmueble-form-layout");
 
         binder = new Binder<>();
-        
 
         //Type
         Label typeLabel = new Label("Tipo");
-        typeLabel.addClassNames("col-sm-2", "col-form-label");
+        typeLabel.addClassNames("col-sm-1", "col-form-label");
 
         RadioButtonGroup<String> typeRadioGroup = new RadioButtonGroup<>();
         typeRadioGroup.setItems(RequestInmueble.TYPE_ALQUILER, RequestInmueble.TYPE_VENTA);
         typeRadioGroup.addThemeVariants(RadioGroupVariant.LUMO_VERTICAL);
         typeRadioGroup.setValue(RequestInmueble.TYPE_ALQUILER);
 
-        Div typeDiv = new Div(typeLabel,typeRadioGroup);
+        Div typeRadioGroupDiv = new Div(typeRadioGroup);
+        typeRadioGroupDiv.addClassNames("col-sm-10");
+
+        Div typeDiv = new Div(typeLabel,typeRadioGroupDiv);
         typeDiv.addClassNames("form-group", "row");
 
         //Title
         Label titleLabel = new Label("Título");
-        titleLabel.addClassNames("col-sm-2", "col-form-label");
+        titleLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField title = new TextField();
         title.setPlaceholder("Título");
+        title.addClassName("full-width");
 
-        Div titleDiv = new Div(titleLabel,title);
+        Div titleInputDiv = new Div(title);
+        titleInputDiv.addClassNames("col-sm-7");
+
+        Div titleDiv = new Div(titleLabel,titleInputDiv);
         titleDiv.addClassNames("form-group", "row");
 
         //Address
         Label addressLabel = new Label("Dirección");
-        addressLabel.addClassNames("col-sm-2", "col-form-label");
+        addressLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField address = new TextField();
         address.setPlaceholder("Dirección");
+        address.addClassName("full-width");
 
-        Div addressDiv = new Div(addressLabel,address);
+        Div addressInputDiv = new Div(address);
+        addressInputDiv.addClassNames("col-sm-7");
+
+        Div addressDiv = new Div(addressLabel,addressInputDiv);
         addressDiv.addClassNames("form-group", "row");
 
         //Price
         Label priceLabel = new Label("Precio");
-        priceLabel.addClassNames("col-sm-2", "col-form-label");
+        priceLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField price = new TextField();
         price.setPlaceholder("");
 
-        Div priceDiv = new Div(priceLabel,price);
-        priceDiv.addClassNames("form-group", "row");
+        Div priceInputDiv = new Div(price);
+        priceInputDiv.addClassNames("col-sm-3");
 
         //Area
         Label areaLabel = new Label("Superficie");
-        areaLabel.addClassNames("col-sm-2", "col-form-label");
+        areaLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField area = new TextField();
         area.setPlaceholder("");
 
-        Div areaDiv = new Div(areaLabel,area);
-        areaDiv.addClassNames("form-group", "row");
+        Div areaInputDiv = new Div(area);
+        areaInputDiv.addClassNames("col-sm-7");
+
+        Div priceAreaDiv = new Div(priceLabel,priceInputDiv, areaLabel,areaInputDiv);
+        priceAreaDiv.addClassNames("form-group", "row");
+        priceAreaDiv.setId("priceAreaDiv");
 
         //Rooms
         Label roomsLabel = new Label("Habitaciones");
-        roomsLabel.addClassNames("col-sm-2", "col-form-label");
+        roomsLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField rooms = new TextField();
         rooms.setPlaceholder("");
 
-        Div roomsDiv = new Div(roomsLabel,rooms);
-        roomsDiv.addClassNames("form-group", "row");
+        Div roomsInputDiv = new Div(rooms);
+        roomsInputDiv.addClassNames("col-sm-3");
 
         //Baths
         Label bathsLabel = new Label("Baños");
-        bathsLabel.addClassNames("col-sm-2", "col-form-label");
+        bathsLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField baths = new TextField();
         baths.setPlaceholder("");
 
-        Div bathsDiv = new Div(bathsLabel,baths);
-        bathsDiv.addClassNames("form-group", "row");
+        Div bathsInputDiv = new Div(baths);
+        bathsInputDiv.addClassNames("col-sm-7");
+
+        Div roomsBathsDiv = new Div(roomsLabel, roomsInputDiv, bathsLabel, bathsInputDiv);
+        roomsBathsDiv.addClassNames("form-group", "row");
+        roomsBathsDiv.setId("roomsBathsDiv");
 
         //Garage
         Label garageLabel = new Label("Garaje");
-        garageLabel.addClassNames("col-sm-2", "col-form-label");
+        garageLabel.addClassNames("col-sm-1", "col-form-label");
 
         Checkbox garage = new Checkbox();
         garage.setValue(false);
 
+        Div garageInputDiv = new Div(garage);
+        garageInputDiv.addClassNames("col-sm-3");
+
         //Pool
         Label poolLabel = new Label("Piscina");
-        poolLabel.addClassNames("col-sm-2", "col-form-label");
+        poolLabel.addClassNames("col-sm-1", "col-form-label");
 
         Checkbox pool = new Checkbox();
         pool.setValue(false);
 
-        Div propertiesDiv = new Div(garageLabel,garage,poolLabel,pool);
+        Div poolInputDiv = new Div(pool);
+        poolInputDiv.addClassNames("col-sm-7");
+
+        Div propertiesDiv = new Div(garageLabel,garageInputDiv,poolLabel,poolInputDiv);
         propertiesDiv.addClassNames("form-group", "row");
 
         //Description
         Label descriptionLabel = new Label("Descripción");
-        descriptionLabel.addClassNames("col-sm-2", "col-form-label");
+        descriptionLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextArea description = new TextArea();
         description.setPlaceholder("Descripcion ...");
+        description.addClassName("full-width");
 
-        Div descriptionDiv = new Div(descriptionLabel,description);
+        Div descriptionInputDiv = new Div(description);
+        descriptionInputDiv.addClassNames("col-sm-7");
+
+        Div descriptionDiv = new Div(descriptionLabel,descriptionInputDiv);
         descriptionDiv.addClassNames("form-group", "row");
 
         //Images
         Label uploadLabel = new Label("Imágenes");
-        uploadLabel.addClassNames("col-sm-2", "col-form-label");
+        uploadLabel.addClassNames("col-sm-1", "col-form-label");
 
         MultiFileMemoryBuffer buffer = new MultiFileMemoryBuffer();
         Upload upload = new Upload(buffer);
+        upload.addClassName("full-width");
+
         upload.setMaxFiles(GuiConst.MAX_IMAGES_UPLOAD);
         upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
 
@@ -188,10 +221,13 @@ public class CreateInmuebleView extends Div {
             infoLabel.add("FileName: "+event.getFileName());
         });
 
-        Div uploadDiv = new Div(uploadLabel,upload);
+        Div uploadInputDiv = new Div(upload);
+        uploadInputDiv.addClassNames("col-sm-7");
+
+        Div uploadDiv = new Div(uploadLabel,uploadInputDiv);
         uploadDiv.addClassNames("form-group", "row");
 
-        formLayout.add(typeDiv, titleDiv, addressDiv, priceDiv, areaDiv, roomsDiv, bathsDiv, propertiesDiv, descriptionDiv, uploadDiv);
+        formLayout.add(typeDiv, titleDiv, addressDiv, priceAreaDiv, roomsBathsDiv, propertiesDiv, descriptionDiv, uploadDiv);
 
         HorizontalLayout actions = getAcciones(buffer);
 

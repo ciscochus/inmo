@@ -9,6 +9,18 @@
   width: 100%;
 }
 
+.inmuebles-view #grid-wrapper {
+  padding-top: 15px;
+}
+
+.inmuebles-view #grid-wrapper .warning {
+  display: inline-block;
+  text-align: center;
+  font-size: 30px;
+  width: 100%;
+  color: var(--lumo-secondary-text-color);
+}
+
 .inmuebles-view .full-size {
   width: 100%;
   height: 100%;
@@ -86,6 +98,14 @@
 .inmuebles-view .card label {
   padding-right: 5px;
   font-weight: bold;
+}
+
+.confirmDialog {
+  text-align: center;
+}
+
+.confirmDialog .confirm-buttons vaadin-button{
+  margin: 20px 10px 0 10px;
 }
 
 #filter-layout {
