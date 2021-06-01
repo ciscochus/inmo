@@ -3,6 +3,18 @@
     margin-top: 30px;
 }
 
-.full-width {
-    width: 100%;
+.check-container {
+    padding-top: 5px;
+}
+
+#create-inmueble-container vaadin-horizontal-layout {
+    width: 610px;
+    display: inline-block;
+    text-align: left;
+    margin-left: 100px;
+    margin-top: 10px;
+}
+
+#create-inmueble-container vaadin-upload {
+    background: rgba(255,255,255,0.7);
 }

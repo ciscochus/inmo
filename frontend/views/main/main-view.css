@@ -40,8 +40,6 @@ a#logoHome img {
   width: 50px;
 }
 
-
-
 a.disclaimerLogoAnchor {
   font-size: 1px;
   color: transparent;
@@ -72,3 +70,14 @@ vaadin-tab[selected] {
   color: var(--lumo-primary-text-color);
 }
 
+.full-width {
+  width: 100%;
+}
+
+.inmo-background {
+  background: url(https://i.imgur.com/Zh03di0.png);
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  height: 100%;
+  overflow: hidden;
+}

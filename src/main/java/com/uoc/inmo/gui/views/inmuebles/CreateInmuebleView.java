@@ -58,13 +58,13 @@ public class CreateInmuebleView extends Div {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public Binder<RequestInmueble> binder;
-    public Label infoLabel = new Label();
 
     protected final GuiInmuebleService guiInmuebleService;
 
     public CreateInmuebleView(@Autowired GuiInmuebleService guiInmuebleService) {
         this.guiInmuebleService = guiInmuebleService;
         add(addCreateInmuebleForm());
+        addClassName("inmo-background");
     }
 
     public Div addCreateInmuebleForm(){
@@ -145,7 +145,7 @@ public class CreateInmuebleView extends Div {
         priceAreaDiv.setId("priceAreaDiv");
 
         //Rooms
-        Label roomsLabel = new Label("Habitaciones");
+        Label roomsLabel = new Label("Habs.");
         roomsLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextField rooms = new TextField();
@@ -176,7 +176,7 @@ public class CreateInmuebleView extends Div {
         garage.setValue(false);
 
         Div garageInputDiv = new Div(garage);
-        garageInputDiv.addClassNames("col-sm-3");
+        garageInputDiv.addClassNames("col-sm-3", "check-container");
 
         //Pool
         Label poolLabel = new Label("Piscina");
@@ -186,7 +186,7 @@ public class CreateInmuebleView extends Div {
         pool.setValue(false);
 
         Div poolInputDiv = new Div(pool);
-        poolInputDiv.addClassNames("col-sm-7");
+        poolInputDiv.addClassNames("col-sm-7", "check-container");
 
         Div propertiesDiv = new Div(garageLabel,garageInputDiv,poolLabel,poolInputDiv);
         propertiesDiv.addClassNames("form-group", "row");
@@ -196,7 +196,7 @@ public class CreateInmuebleView extends Div {
         descriptionLabel.addClassNames("col-sm-1", "col-form-label");
 
         TextArea description = new TextArea();
-        description.setPlaceholder("Descripcion ...");
+        description.setPlaceholder("Descripción ...");
         description.addClassName("full-width");
 
         Div descriptionInputDiv = new Div(description);
@@ -215,11 +215,6 @@ public class CreateInmuebleView extends Div {
 
         upload.setMaxFiles(GuiConst.MAX_IMAGES_UPLOAD);
         upload.setAcceptedFileTypes("image/jpeg", "image/png", "image/gif");
-
-        upload.addSucceededListener(event -> {
-            infoLabel.setText("MimeType: "+event.getMIMEType()+", ");
-            infoLabel.add("FileName: "+event.getFileName());
-        });
 
         Div uploadInputDiv = new Div(upload);
         uploadInputDiv.addClassNames("col-sm-7");
@@ -272,7 +267,7 @@ public class CreateInmuebleView extends Div {
             .withNullRepresentation(false)
             .bind(RequestInmueble::getPool, RequestInmueble::setPool);
 
-        formDiv.add(formLayout, actions, infoLabel);
+        formDiv.add(formLayout, actions);
 
         return formDiv;
     }
@@ -289,7 +284,6 @@ public class CreateInmuebleView extends Div {
         reset.addClickListener(event -> {
             // clear fields by setting null
             binder.readBean(null);
-            infoLabel.setText("");
         });
 
         HorizontalLayout actions = new HorizontalLayout();
@@ -309,10 +303,8 @@ public class CreateInmuebleView extends Div {
 
                 request.setImages(readImages(buffer));
                 if(guiInmuebleService.createInmueble(request) == null){
-                    infoLabel.setText("Error!");
                     new Notification(GuiConst.NOTIFICATION_SAVE_ERROR, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
                 } else {
-                    infoLabel.setText("Saved bean values: " + request);
                     new Notification(GuiConst.NOTIFICATION_SAVE_OK, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
                     navegateTo(GuiConst.PAGE_LISTADO_MIS_INMUEBLES);
                 }
@@ -323,7 +315,6 @@ public class CreateInmuebleView extends Div {
                         .map(BindingValidationStatus::getMessage)
                         .map(Optional::get).distinct()
                         .collect(Collectors.joining(", "));
-                infoLabel.setText("There are errors: " + errorText);
             }
         });
 

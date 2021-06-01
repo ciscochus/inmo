@@ -143,10 +143,8 @@ public class UpdateInmuebleView extends CreateInmuebleView implements HasUrlPara
                 request.setId(inmuebleId);
 
                 if(guiInmuebleService.updateInmueble(request) == null){
-                    infoLabel.setText("Error!");
                     new Notification(GuiConst.NOTIFICATION_SAVE_ERROR, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
                 } else {
-                    infoLabel.setText("Saved bean values: " + request);
                     new Notification(GuiConst.NOTIFICATION_SAVE_OK, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
                     navegateTo(GuiConst.PAGE_LISTADO_MIS_INMUEBLES);
                 }
@@ -157,7 +155,6 @@ public class UpdateInmuebleView extends CreateInmuebleView implements HasUrlPara
                         .map(BindingValidationStatus::getMessage)
                         .map(Optional::get).distinct()
                         .collect(Collectors.joining(", "));
-                infoLabel.setText("There are errors: " + errorText);
             }
         });
 
