@@ -19,7 +19,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.dependency.CssImport;
-import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
@@ -101,9 +100,9 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
 
         DataProviderListener<InmuebleSummary> listener = ( e -> {
             if(dataProvider.size(new Query<>()) == 0)
-                noItemsDiv.removeClassName("hidden");
+                noItemsDiv.removeClassName("d-none");
             else
-                noItemsDiv.addClassName("hidden");
+                noItemsDiv.addClassName("d-none");
         });
 
         listener.onDataChange(null);
@@ -363,6 +362,12 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
                     Optional<InmuebleSummaryFilter> filter = query.getFilter();
 
                     List<InmuebleSummary> inmuebleSummaries = inmuebleService.fetchInmuebleSummary(offset, limit, filter);
+
+                    if(inmuebleSummaries.size() > 0){
+                        noItemsDiv.addClassName("d-none");
+                    } else {
+                        noItemsDiv.removeClassName("d-none");
+                    }
 
                     return inmuebleSummaries.stream();
                 },

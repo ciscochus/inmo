@@ -27,6 +27,7 @@ public class GuiConst {
     public static final String PAGE_LISTADO_INMUEBLES = "inmuebles";
     public static final String PAGE_LISTADO_MIS_INMUEBLES = "misInmuebles";
     public static final String PAGE_UPDATE_INMUEBLE = "updateInmueble";
+    public static final String PAGE_LOGIN = "login";
 
     public static final String NOTIFICATION_SAVE_OK = "Cambios guardados correctamente";
     public static final String NOTIFICATION_SAVE_ERROR = "Se ha producido un error";

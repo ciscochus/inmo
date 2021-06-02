@@ -106,6 +106,7 @@ public class RegisterUserView extends Div {
         if(particularBinder.writeBeanIfValid(newParticular)){
             if(userService.createParticular(newUser, newParticular) != null){
                 new Notification(GuiConst.NOTIFICATION_SAVE_OK, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
+                navegateTo(GuiConst.PAGE_LOGIN);
             } else {
                 new Notification(GuiConst.NOTIFICATION_SAVE_ERROR, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
             }
@@ -120,6 +121,7 @@ public class RegisterUserView extends Div {
         if(professionalBinder.writeBeanIfValid(newInmobiliaria)){
             if(userService.createInmobiliaria(newUser, newInmobiliaria) != null){
                 new Notification(GuiConst.NOTIFICATION_SAVE_OK, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
+                navegateTo(GuiConst.PAGE_LOGIN);
             } else {
                 new Notification(GuiConst.NOTIFICATION_SAVE_ERROR, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
             }
@@ -337,6 +339,11 @@ public class RegisterUserView extends Div {
         email.addValueChangeListener(event -> passwordBinding.validate());
         password.addValueChangeListener(event -> emailBinding.validate());
 
+
+        Binding<User, String> typeBinding = userBinder.forField(typeRadioGroup)
+            .withNullRepresentation(User.TYPE_PARTICULAR)
+            .bind(User::getTipo, User::setTipo);
+
         Binding<Particular, String> nameBinding = particularBinder.forField(name)
             .withNullRepresentation("")
             .bind(Particular::getName, Particular::setName);
@@ -344,8 +351,6 @@ public class RegisterUserView extends Div {
         Binding<Particular, String> surnameBinding = particularBinder.forField(surname)
             .withNullRepresentation("")
             .bind(Particular::getSurname, Particular::setSurname);
-
-
 
         Binding<Inmobiliaria, String> cifBinding = professionalBinder.forField(cif)
             .withNullRepresentation("")
@@ -387,5 +392,9 @@ public class RegisterUserView extends Div {
         }
     }
 
-
+    public void navegateTo(String url){
+        if(this.getUI().isPresent()){
+            this.getUI().get().navigate(url);
+        }
+    }
 }

@@ -8,6 +8,8 @@ import com.uoc.inmo.query.api.request.RequestUser;
 import com.uoc.inmo.query.entity.user.Inmobiliaria;
 import com.uoc.inmo.query.entity.user.Particular;
 import com.uoc.inmo.query.entity.user.User;
+import com.uoc.inmo.query.repository.InmobiliariaRepository;
+import com.uoc.inmo.query.repository.ParticularRepository;
 import com.uoc.inmo.query.repository.UserRepository;
 import com.uoc.inmo.query.service.UserService;
 
@@ -24,6 +26,12 @@ public class UserServiceImpl implements UserService{
     
     @NonNull
     private final UserRepository userRepository;
+
+    @NonNull
+    private final InmobiliariaRepository inmobiliariaRepository;
+
+    @NonNull
+    private final ParticularRepository particularRepository;
 
     @NonNull
 	private final PasswordEncoder passwordEncoder;
@@ -76,17 +84,36 @@ public class UserServiceImpl implements UserService{
     @Override
     public User createInmobiliaria(User newUser, Inmobiliaria inmobiliaria) {
 
-        inmobiliaria.setId(UUID.randomUUID());
-        newUser.setInmobiliaria(inmobiliaria);
+        User user = createUser(newUser);
 
-        return createUser(newUser);
+        if(user == null)
+            return null;
+
+        inmobiliaria.setId(UUID.randomUUID());
+        inmobiliaria.setUser(user);
+
+        inmobiliaria = inmobiliariaRepository.saveAndFlush(inmobiliaria);
+
+        user.setInmobiliaria(inmobiliaria);
+
+        return user;
     }
 
     @Override
     public User createParticular(User newUser, Particular particular) {
-        particular.setId(UUID.randomUUID());
-        newUser.setParticular(particular);
 
-        return createUser(newUser);
+        User user = createUser(newUser);
+
+        if(user == null)
+            return null;
+
+        particular.setId(UUID.randomUUID());
+        particular.setUser(user);
+
+        particular = particularRepository.saveAndFlush(particular);
+
+        user.setParticular(particular);
+
+        return user;
     }
 }
