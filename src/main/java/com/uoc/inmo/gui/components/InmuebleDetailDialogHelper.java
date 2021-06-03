@@ -6,9 +6,13 @@ import java.util.UUID;
 import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
+import com.uoc.inmo.gui.util.DateUtils;
+import com.uoc.inmo.gui.util.NumberUtils;
 import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
+import com.uoc.inmo.query.entity.user.Inmobiliaria;
+import com.uoc.inmo.query.entity.user.User;
 import com.uoc.inmo.query.utils.ConvertionUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -19,6 +23,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -41,10 +46,13 @@ public class InmuebleDetailDialogHelper {
     
     @Autowired GuiInmuebleService guiInmuebleService;
 
-    public Dialog create(InmuebleSummary inmueble){
+    public Dialog create(InmuebleSummary inmueble, User user){
         Dialog dialog = new Dialog();
         dialog.setCloseOnEsc(true);
         dialog.setId("inmueble-detail-dialog");
+
+        Div dialogContainerDiv = new Div();
+        dialogContainerDiv.addClassNames("dialog-container", "container");
 
         if(inmueble == null)
             return dialog;
@@ -57,7 +65,7 @@ public class InmuebleDetailDialogHelper {
         if(carousel != null)
             imagenesDiv.add(carousel);
 
-        dialog.add(imagenesDiv);
+        dialogContainerDiv.add(imagenesDiv);
         // barra separadora
 
 
@@ -67,7 +75,7 @@ public class InmuebleDetailDialogHelper {
             Button openChartButton = new Button(VaadinIcon.LINE_CHART.create());
             if(inmueble.getPriceChanged()){
                 Div priceChartDiv = getPriceChart(inmueble);
-                dialog.add(priceChartDiv);
+                dialogContainerDiv.add(priceChartDiv);
                 openChartButton.setClassName("open-chart-button");
                 openChartButton.addClickListener(e -> {
                     UI.getCurrent().getPage().executeJs("togglePriceChart()");
@@ -88,33 +96,43 @@ public class InmuebleDetailDialogHelper {
 
             controlBar.addClassName("controlBar");
 
-            dialog.add(controlBar);
+            dialogContainerDiv.add(controlBar);
         }
 
         // Titulo
 
-        HorizontalLayout tituloLayout = new HorizontalLayout();
-        
+        Div tituloRow = new Div();
+        tituloRow.addClassName("row");
+        tituloRow.setId("titulo-div");
+
         Span titulo = new Span(inmueble.getTitle());
         titulo.setClassName("inmueble-title");
+
+        Div tituloCol = new Div(titulo);
+        tituloCol.addClassName("col-6");
 
         Span address = new Span(inmueble.getAddress());
         address.setClassName("inmueble-address");
 
-        tituloLayout.add(titulo, address);
+        Div addressCol = new Div(address);
+        addressCol.addClassNames("col", "address-col");
 
-        Div tituloDiv = new Div(tituloLayout);
-        tituloDiv.setId("titulo-div");
+        tituloRow.add(tituloCol, addressCol);
 
         // Superficie - habitaciones - precio
 
-        HorizontalLayout areaLayout = new HorizontalLayout();
-        
-        Label areaLabel = new Label("Supeficie: ");
+        Div areaRow = new Div();
+        areaRow.addClassName("row");
+        areaRow.setId("area-div");
+
+        Label areaLabel = new Label("Superficie: ");
         areaLabel.addClassNames("label", "area-label");
 
         Span areaValue = new Span(Double.toString(inmueble.getArea()));
         areaValue.addClassNames("area-value");
+
+        Div areaCol = new Div(areaLabel, areaValue);
+        areaCol.addClassName("col-3");
 
         Label roomsLabel = new Label("Habitaciones: ");
         roomsLabel.addClassNames("label", "rooms-label");
@@ -122,46 +140,86 @@ public class InmuebleDetailDialogHelper {
         Span roomsValue = new Span(Integer.toString(inmueble.getRooms()));
         roomsValue.addClassNames("rooms-value");
 
+        Div roomsCol = new Div(roomsLabel, roomsValue);
+        roomsCol.addClassName("col-2");
+
         Label bathsLabel = new Label("Baños: ");
         bathsLabel.addClassNames("label", "baths-label");
 
         Span bathsValue = new Span(Integer.toString(inmueble.getBaths()));
         bathsValue.addClassNames("baths-value");
 
-        Span price = new Span(Double.toString(inmueble.getPrice())+" €");
+        Div bathsCol = new Div(bathsLabel, bathsValue);
+        bathsCol.addClassName("col-2");
+
+        Span price = new Span(NumberUtils.getFormatPrice(inmueble.getPrice())+" €");
         price.setClassName("inmueble-price");
 
-        areaLayout.add(areaLabel, areaValue, roomsLabel, roomsValue, bathsLabel, bathsValue, price);
+        Div priceCol = new Div(price);
+        priceCol.addClassNames("col", "price-col");
 
-        Div areaDiv = new Div(areaLayout);
-        areaDiv.setId("area-div");
+        areaRow.add(areaCol, roomsCol, bathsCol, priceCol);
+        areaRow.setId("area-div");
 
         // Descripcion
-        Div descriptionDiv = new Div(new Text(inmueble.getDescription() != null ? inmueble.getDescription() : ""));
-        descriptionDiv.setId("inmueble-description");
+        Div descriptionCol = new Div(new Text(inmueble.getDescription() != null ? inmueble.getDescription() : ""));
+        descriptionCol.addClassName("col");
+
+        Div descriptionRow = new Div(descriptionCol);
+        descriptionRow.setId("inmueble-description");
+        descriptionRow.addClassName("row");
 
         // barra separadora
 
         // Otras características
 
-        HorizontalLayout otherPropertiesLayout = new HorizontalLayout();
-        
         Checkbox garageCheck = new Checkbox("Garaje", inmueble.getGarage() != null && inmueble.getGarage());
         garageCheck.setReadOnly(true);
+
+        Div garageCheckCol = new Div(garageCheck);
+        garageCheckCol.addClassName("col-2");
 
         Checkbox poolCheck = new Checkbox("Piscina", inmueble.getPool() != null && inmueble.getPool());
         poolCheck.setReadOnly(true);
 
-        otherPropertiesLayout.add(garageCheck, poolCheck);
+        Div poolCheckCol = new Div(poolCheck);
+        poolCheckCol.addClassName("col");
 
-        Div otherPropertiesDiv = new Div(otherPropertiesLayout);
+        Div otherPropertiesRow = new Div(garageCheckCol, poolCheckCol);
+        otherPropertiesRow.addClassName("row");
+        otherPropertiesRow.setId("otherProperties-div");
+
+        //Dates
+
+        Label createdLabel = new Label("Publicado: ");
+        createdLabel.addClassNames("label", "created-label");
+
+        Span created = new Span(DateUtils.formatDate(inmueble.getCreated()));
+        created.addClassNames("date","created-date");
+
+        Div createdCol = new Div(createdLabel, created);
+        createdCol.addClassNames("col-6","created-col");
+
+        Label updatedLabel = new Label("Actualizado: ");
+        updatedLabel.addClassNames("label", "updated-label");
+
+        Span updated = new Span(DateUtils.formatDate(inmueble.getUpdated()));
+        updated.addClassNames("date","updated-date");
+
+        Div updatedCol = new Div(updatedLabel, updated);
+        updatedCol.addClassNames("col-6","updated-col");
+
+        Div datesRow = new Div(createdCol, updatedCol);
+        datesRow.addClassName("row");
+        datesRow.setId("dates-div");
 
         // Datos del anunciante
 
+        Div inmobiliariaRow = getInmobiliariaInfo(inmueble, user);
 
-        VerticalLayout mainLayout = new VerticalLayout(tituloDiv, areaDiv, descriptionDiv, otherPropertiesDiv);
+        dialogContainerDiv.add(tituloRow, areaRow, descriptionRow, otherPropertiesRow, datesRow, inmobiliariaRow);
 
-        dialog.add(mainLayout);
+        dialog.add(dialogContainerDiv);
 
         return dialog;
     }
@@ -262,16 +320,80 @@ public class InmuebleDetailDialogHelper {
         if(img == null)
             return null;
 
-        img.addClassNames("d-block", "w-100");
+        // img.addClassNames("d-block", "w-100");
 
         carouselItem.add(img);
 
         return carouselItem;
     }
 
+    Div getInmobiliariaInfo(InmuebleSummary inmueble, User user){
+
+        Div inmobiliariaInfoDiv = new Div();
+        inmobiliariaInfoDiv.setId("inmobiliaria-info-container");
+        inmobiliariaInfoDiv.addClassName("container");
+
+        if(inmueble == null || user == null || user.getInmobiliaria() == null)
+            return inmobiliariaInfoDiv;
+
+        Inmobiliaria inmobiliaria = user.getInmobiliaria();
+
+        Div titleCol = new Div(new Span("Datos del anunciante"));
+        titleCol.addClassNames("col", "inmobiliaria-title-col");
+
+        Div titleRow = new Div(titleCol);
+        titleRow.addClassName("row");
+
+        Div mainDiv = new Div();
+        mainDiv.addClassName("row");
+
+        Div left = new Div();
+        left.addClassName("col-3");
+
+        Div rigth = new Div();
+        rigth.addClassName("col-9");
+
+        Div phoneCol = new Div(new Span(inmobiliaria.getPhone()));
+        phoneCol.addClassName("col");
+
+        Div phoneRow = new Div(phoneCol);
+        phoneRow.addClassName("row");
+
+        Div mailCol = new Div(new Span(user.getEmail()));
+        mailCol.addClassName("col");
+
+        Div mailRow = new Div(mailCol);
+        mailRow.addClassName("row");
+
+        Div webCol = new Div(new Span(inmobiliaria.getWeb()));
+        webCol.addClassName("col");
+
+        Div webRow = new Div(webCol);
+        webRow.addClassName("row");
+
+        Div addressCol = new Div(new Span(inmobiliaria.getAddress()));
+        addressCol.addClassName("col");
+
+        Div addressRow = new Div(addressCol);
+        addressRow.addClassName("row");
+
+        left.add(phoneRow, mailRow, webRow, addressRow);
+
+        Div descriptionCol = new Div(new Paragraph(inmobiliaria.getDescription()));
+        descriptionCol.addClassName("col");
+
+        rigth.add(descriptionCol);
+
+        mainDiv.add(left,rigth);
+        inmobiliariaInfoDiv.add(titleRow, mainDiv);
+
+        return inmobiliariaInfoDiv;
+    }
+
     Div getPriceChart(InmuebleSummary inmueble){
         Div priceChartDiv = new Div();
         priceChartDiv.setId("priceChart");
+        priceChartDiv.addClassName("d-none");
 
         Canvas canvas = new Canvas(300, 100);
         canvas.setId("canvas-price");
@@ -279,7 +401,7 @@ public class InmuebleDetailDialogHelper {
         priceChartDiv.add(canvas);
 
         Span data = new Span(getInmueblePriceHistory(inmueble.getId()));
-        data.addClassName("invisible");
+        data.addClassName("d-none");
         data.setId("priceChart-data");
 
         priceChartDiv.add(data);

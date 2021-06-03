@@ -64,6 +64,7 @@
   width: 90px;
   height: 90px;
   text-align: center;
+  padding-top: 10px;
 }
 
 .no-foto {
@@ -85,8 +86,73 @@
   width: 100%;
   height: 250px;
 }
+.dialog-container {
+  width: 900px !important;
+  padding-bottom: 10px;
+}
 
+.dialog-container .carousel-item{
+  height: 350px;
+  text-align: center;
+}
 
+.dialog-container .carousel-item img{
+  max-height: 350px;
+  max-width: 100%;
+}
+
+.dialog-container .carousel-inner{
+  text-align: center;
+  background-color: #b3bcc6;
+}
+
+.dialog-container .label {
+  padding-right: 5px;
+}
+
+div#imagenes-div {
+  margin-bottom: 10px;
+}
+
+.dialog-container #titulo-div{
+  padding-bottom: 10px;
+}
+
+div#inmueble-description {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+div#otherProperties-div {
+  padding-bottom: 15px;
+}
+
+.dialog-container #dates-div {
+  border-top: 1px dashed #8c96a3;
+  padding-top: 10px;
+}
+
+.dialog-container .address-col,
+.dialog-container .price-col,
+.dialog-container .updated-col {
+  text-align: right;
+}
+
+.dialog-container .inmobiliaria-title-col {
+  font-weight: 600;
+  font-size: x-large;
+}
+
+.dialog-container #inmobiliaria-info-container {
+  margin: 10px;
+  background-color: #b3bcc626;
+  border: 1px dashed #bbb;
+  margin-bottom: 30px;
+}
+
+.controlBar {
+  text-align: right;
+}
 
 .inmuebles-view .card .price-row {
   font-size: 20px;

@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface InmueblePriceHistoryRepository extends JpaRepository<InmueblePriceHistory, UUID>{
     
-    List<InmueblePriceHistory> findInmueblePriceHistoriesByIdInmuebleOrderByCreatedDesc(UUID idInmueble);
+    List<InmueblePriceHistory> findInmueblePriceHistoriesByIdInmuebleOrderByCreatedAsc(UUID idInmueble);
 }

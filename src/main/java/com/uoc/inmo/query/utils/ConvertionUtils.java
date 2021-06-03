@@ -40,7 +40,7 @@ public class ConvertionUtils {
         if(source == null)
             return null;
 
-        DateFormat df = new SimpleDateFormat("dd/mm/yyyy");
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         return df.format(source);
     }
 }

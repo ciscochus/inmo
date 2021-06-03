@@ -32,6 +32,7 @@ window.createPriceChart = function(){
 window.togglePriceChart = function(){
         if($("#canvas-price").prop("init") === undefined){
             createPriceChart();
+            $("#priceChart").removeClass("d-none")
         } else {
             $("#priceChart").toggle();
         }

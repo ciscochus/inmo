@@ -12,4 +12,6 @@ public interface UserService {
 
     public User createInmobiliaria(User user, Inmobiliaria inmobiliaria);
     public User createParticular(User user, Particular particular);
+
+    public User getUser(String email);
 }

@@ -5,6 +5,7 @@ import java.sql.Blob;
 import java.util.Base64;
 import java.util.List;
 
+import com.uoc.inmo.gui.util.NumberUtils;
 import com.uoc.inmo.query.entity.inmueble.InmuebleImages;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.utils.ConvertionUtils;
@@ -71,7 +72,7 @@ public class InmuebleCardHelper {
 
                     Div priceRow = new Div();
                     priceRow.addClassNames("price-row");
-                    priceRow.add(new Span(inmueble.getPrice()+" €"));
+                    priceRow.add(new Span(NumberUtils.getFormatPrice(inmueble.getPrice())+" €"));
 
                     actionsColumn.add(priceRow, acciones);
 

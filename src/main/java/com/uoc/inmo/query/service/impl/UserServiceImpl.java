@@ -116,4 +116,12 @@ public class UserServiceImpl implements UserService{
 
         return user;
     }
+
+    @Override
+    public User getUser(String email){
+        if(!StringUtils.hasText(email))
+            return null;
+
+        return userRepository.findByEmailIgnoreCase(email);
+    }
 }

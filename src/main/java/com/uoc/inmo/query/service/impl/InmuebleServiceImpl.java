@@ -99,7 +99,7 @@ public class InmuebleServiceImpl implements InmuebleService{
 
     @Override
     public List<ResponsePrice> getInmueblePriceHistory(UUID inmuebleId) {
-        List<InmueblePriceHistory> entities = inmueblePriceHistoryRepository.findInmueblePriceHistoriesByIdInmuebleOrderByCreatedDesc(inmuebleId);
+        List<InmueblePriceHistory> entities = inmueblePriceHistoryRepository.findInmueblePriceHistoriesByIdInmuebleOrderByCreatedAsc(inmuebleId);
         
         List<ResponsePrice> responseList = new ArrayList<>();
 

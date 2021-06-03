@@ -11,6 +11,7 @@ import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
 import com.uoc.inmo.query.entity.user.Role;
 import com.uoc.inmo.query.service.InmuebleService;
+import com.uoc.inmo.query.service.UserService;
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.Shortcuts;
 import com.vaadin.flow.component.Text;
@@ -41,8 +42,9 @@ public class MisInmueblesView extends InmueblesView {
     public MisInmueblesView(@Autowired QueryGateway queryGateway, 
                             @Autowired InmuebleService inmuebleService, 
                             @Autowired InmuebleDetailDialogHelper inmuebleDetailDialogHelper,
+                            @Autowired UserService userService,
                             @Autowired GuiInmuebleService guiInmuebleService) {
-        super(queryGateway, inmuebleService, inmuebleDetailDialogHelper);
+        super(queryGateway, inmuebleService, inmuebleDetailDialogHelper, userService);
         this.guiInmuebleService = guiInmuebleService;
         
     }

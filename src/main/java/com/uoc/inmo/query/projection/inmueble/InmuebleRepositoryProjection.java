@@ -91,6 +91,9 @@ public class InmuebleRepositoryProjection {
 
         inmuebleSummaryRepository.save(entity);
 
+        InmueblePriceHistory history = new InmueblePriceHistory(event.getId(), entity.getPrice(), entity.getCreated());
+        inmueblePriceHistoryRepository.save(history); 
+
         queryUpdateEmitter.emit(CountInmuebleSummariesQuery.class, 
             query -> event.getId().toString().startsWith(""), 
             new CountChangedUpdate());
@@ -115,6 +118,7 @@ public class InmuebleRepositoryProjection {
             InmuebleSummary inmueble = override(entity.get(), event);
 
             if(isPriceChanged){
+                
                 inmueble.setPriceChanged(true);
 
                 InmueblePriceHistory history = new InmueblePriceHistory(event.getId(), inmueble.getPrice(), inmueble.getUpdated());

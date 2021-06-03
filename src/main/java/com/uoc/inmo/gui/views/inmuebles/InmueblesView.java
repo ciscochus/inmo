@@ -12,8 +12,10 @@ import com.uoc.inmo.gui.data.filters.InmuebleSummaryFilter;
 import com.uoc.inmo.gui.views.main.MainView;
 import com.uoc.inmo.query.FetchInmuebleSummariesQuery;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSummary;
+import com.uoc.inmo.query.entity.user.User;
 import com.uoc.inmo.query.filter.inmueble.InmuebleFilter;
 import com.uoc.inmo.query.service.InmuebleService;
+import com.uoc.inmo.query.service.UserService;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -87,14 +89,17 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
 
     private final InmuebleService inmuebleService;
     private final InmuebleDetailDialogHelper inmuebleDetailDialogHelper;
+    private final UserService userService;
 
 
     public InmueblesView(@Autowired QueryGateway queryGateway, 
                             @Autowired InmuebleService inmuebleService,
-                            @Autowired InmuebleDetailDialogHelper inmuebleDetailDialogHelper) {
+                            @Autowired InmuebleDetailDialogHelper inmuebleDetailDialogHelper,
+                            @Autowired UserService userService) {
 
         this.inmuebleService = inmuebleService;
         this.inmuebleDetailDialogHelper = inmuebleDetailDialogHelper;
+        this.userService = userService;
         
         ConfigurableFilterDataProvider<InmuebleSummary, Void, InmuebleSummaryFilter> dataProvider = getInmuebleSummaryDataProvider(inmuebleService).withConfigurableFilter();
 
@@ -384,7 +389,10 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
         if (strId != null) {
             UUID inmuebleId = UUID.fromString(strId);
 
-            inmuebleDetailDialog = inmuebleDetailDialogHelper.create(inmuebleService.getInmuebleSummaryById(inmuebleId));
+            InmuebleSummary inmueble = inmuebleService.getInmuebleSummaryById(inmuebleId);
+            User user = userService.getUser(inmueble.getEmail());
+
+            inmuebleDetailDialog = inmuebleDetailDialogHelper.create(inmueble, user);
             inmuebleDetailDialog.open();
         }
     }
