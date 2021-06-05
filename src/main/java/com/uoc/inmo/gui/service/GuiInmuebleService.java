@@ -29,4 +29,6 @@ public interface GuiInmuebleService {
     public Boolean deleteInmuebleSubscription(UUID idInmueble, String email);
 
     public Boolean checkInmuebleSubscription(UUID inmuebleId, String email);
+
+    public Boolean sendMessage(String message, String from, String to, UUID inmuebleId);
 }

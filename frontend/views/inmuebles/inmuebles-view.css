@@ -150,6 +150,10 @@ div#otherProperties-div {
   margin-bottom: 30px;
 }
 
+.dialog-container .button-row {
+  text-align: right;
+}
+
 .controlBar {
   text-align: right;
 }

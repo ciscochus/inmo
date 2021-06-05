@@ -17,6 +17,7 @@ import com.uoc.inmo.query.utils.ConvertionUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Anchor;
@@ -27,8 +28,7 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextArea;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -219,6 +219,9 @@ public class InmuebleDetailDialogHelper {
 
         dialogContainerDiv.add(tituloRow, areaRow, descriptionRow, otherPropertiesRow, datesRow, inmobiliariaRow);
 
+        if(SecurityUtils.isUserLoggedIn() && SecurityUtils.isParticularLoggedUser())
+            dialogContainerDiv.add(getSolicitarInformacion(inmueble, user));
+
         dialog.add(dialogContainerDiv);
 
         return dialog;
@@ -325,6 +328,65 @@ public class InmuebleDetailDialogHelper {
         carouselItem.add(img);
 
         return carouselItem;
+    }
+
+    Div getSolicitarInformacion(InmuebleSummary inmueble, User user){
+        Div solicitarInformacionDiv = new Div();
+        solicitarInformacionDiv.setId("solicitar-info-container");
+        solicitarInformacionDiv.addClassName("container");
+
+        Div titleRow = new Div();
+        titleRow.addClassNames("row", "message-title-row");
+
+        Div titleCol = new Div(new Span("Solicitar información:"));
+        titleCol.addClassName("col");
+
+        titleRow.add(titleCol);
+
+        Div messageRow = new Div();
+        messageRow.addClassNames("row", "message-row");
+
+        Div messageCol = new Div();
+        messageCol.addClassName("col");
+
+        TextArea message = new TextArea();
+        message.addClassName("w-100");
+        messageCol.add(message);
+
+        messageRow.add(messageCol);
+
+        Div buttonRow = new Div();
+        buttonRow.addClassNames("row","button-row");
+
+        Button enviarButton = new Button("Enviar");
+        enviarButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        enviarButton.addClickListener(e -> sendMessage(message.getValue(), user, inmueble));
+
+        Div buttonCol = new Div(enviarButton);
+        buttonCol.addClassName("col");
+
+        buttonRow.add(buttonCol);
+
+
+
+        solicitarInformacionDiv.add(titleRow, messageRow, buttonRow);
+
+        return solicitarInformacionDiv;
+    }
+
+    private void sendMessage(String message, User user, InmuebleSummary inmueble) {
+
+        String from = SecurityUtils.getEmailLoggedUser();
+        String to = user.getEmail();
+        UUID inmuebleId = inmueble.getId();
+
+        Boolean response = guiInmuebleService.sendMessage(message, from, to, inmuebleId);
+
+        if(response){
+            new Notification(GuiConst.NOTIFICATION_MESSAGE_OK, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
+        } else {
+            new Notification(GuiConst.NOTIFICATION_SAVE_ERROR, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();
+        }
     }
 
     Div getInmobiliariaInfo(InmuebleSummary inmueble, User user){

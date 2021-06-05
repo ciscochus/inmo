@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.uoc.inmo.command.api.request.RequestInmueble;
 import com.uoc.inmo.command.api.request.RequestInmuebleSubscription;
 import com.uoc.inmo.gui.service.GuiInmuebleService;
+import com.uoc.inmo.notification.api.request.RequestMessage;
 import com.uoc.inmo.query.api.response.ResponseFile;
 import com.uoc.inmo.query.api.response.ResponsePrice;
 import com.uoc.inmo.query.entity.inmueble.InmuebleSubscription;
@@ -50,6 +51,9 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
 
     @Value("${service.url.checkInmuebleSubscription}")
     private String checkInmuebleSubscriptionUrl;
+
+    @Value("${service.url.sendMessage}")
+    private String sendMessageUrl;
 
     @NonNull
     InmuebleSubscriptionRepository inmuebleSubscriptionRepository;
@@ -181,5 +185,21 @@ public class GuiInmuebleServiceImpl implements GuiInmuebleService {
             return response.getBody();
         return false;
     }
+
+    @Override
+    public Boolean sendMessage(String message, String from, String to, UUID inmuebleId) {
+
+        RequestMessage request = new RequestMessage(from, to, message, inmuebleId);
+
+        ResponseEntity<Boolean> response = restTemplate.postForEntity(sendMessageUrl, request, Boolean.class);
+
+        if(response.hasBody() && response.getStatusCode().equals(HttpStatus.OK)){
+            return true;
+        }
+        
+        return false;
+    }
+
+    
     
 }
