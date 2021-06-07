@@ -112,7 +112,7 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
 
         listener.onDataChange(null);
 
-        dataProvider.addDataProviderListener(listener);
+        // dataProvider.addDataProviderListener(listener);
 
         dataProvider.setFilter(inmuebleSummaryFilter);
 
@@ -368,19 +368,21 @@ public class InmueblesView extends Div implements HasUrlParameter<String>{
 
                     List<InmuebleSummary> inmuebleSummaries = inmuebleService.fetchInmuebleSummary(offset, limit, filter);
 
-                    if(inmuebleSummaries.size() > 0){
-                        noItemsDiv.addClassName("d-none");
-                    } else {
-                        noItemsDiv.removeClassName("d-none");
-                    }
-
                     return inmuebleSummaries.stream();
                 },
                 // Second callback fetches the total number of items currently in the Grid.
                 // The grid can then use it to properly adjust the scrollbars.
                 query -> {
                     Optional<InmuebleSummaryFilter> filter = query.getFilter();
-                    return inmuebleService.getInmuebleSummaryCount(filter);
+                    int size = inmuebleService.getInmuebleSummaryCount(filter);
+
+                    if(size > 0){
+                        noItemsDiv.addClassName("d-none");
+                    } else {
+                        noItemsDiv.removeClassName("d-none");
+                    }
+
+                    return size;
                 });
     }
 

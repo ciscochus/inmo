@@ -240,7 +240,7 @@ public class InmuebleDetailDialogHelper {
 
         String mensaje = "Se ha producido un error";
         if(response){
-            mensaje = value ? "Subscripción activada" : "Subscripción desactivada";
+            mensaje = value ? GuiConst.NOTIFICATION_SUBSCRIPTION_OK : GuiConst.NOTIFICATION_UNSUBSCRIPTION_OK;
         }
         
         new Notification(mensaje, GuiConst.NOTIFICATION_TIME, GuiConst.NOTIFICACION_POSITION).open();

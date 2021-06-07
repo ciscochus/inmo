@@ -49,6 +49,13 @@ a.disclaimerLogoAnchor {
   float: right;
 }
 
+#user-title {
+  width: 100%;
+  text-align: right;
+  padding-right: 30px;
+  font-weight: bold;
+}
+
 #avatar-menu-item, 
 #profileMenu-div .menu * {
   background-color: transparent !important;

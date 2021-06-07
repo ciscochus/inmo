@@ -6,6 +6,7 @@ import com.uoc.inmo.gui.GuiConst;
 import com.uoc.inmo.gui.security.SecurityUtils;
 import com.uoc.inmo.gui.views.about.AboutView;
 import com.uoc.inmo.gui.views.inmuebles.InmueblesView;
+import com.uoc.inmo.query.entity.user.User;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentUtil;
 import com.vaadin.flow.component.HasComponents;
@@ -21,6 +22,7 @@ import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -90,11 +92,26 @@ public class MainView extends AppLayout {
 
         Div profileMenuDiv = new Div(profileMenu);
         profileMenuDiv.setId("profileMenu-div");
-        profileMenuDiv.setWidthFull();
 
         layout.add(logoDiv, viewTitle);
 
-        layout.add(profileMenuDiv);
+        Div userTitle = new Div();
+        userTitle.setId("user-title");
+
+        if(SecurityUtils.isUserLoggedIn()){
+
+            String type = "";
+            if(SecurityUtils.isProfesionalLoggedUser()) {
+                type = User.TYPE_PROFESIONAL;
+            } else if(SecurityUtils.isParticularLoggedUser()) {
+                type = User.TYPE_PARTICULAR;
+            }
+
+            userTitle.add(new Span(SecurityUtils.getEmailLoggedUser()+" - "+type));
+            
+        }
+
+        layout.add(userTitle, profileMenuDiv);
         
         return layout;
     }

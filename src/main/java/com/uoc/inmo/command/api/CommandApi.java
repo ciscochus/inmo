@@ -106,10 +106,10 @@ public class CommandApi {
 	}
 
 	@PostMapping("/deleteInmuebleSubscription")
-    public String deleteInmuebleSubscription(@RequestBody RequestInmuebleSubscription request) {
+    public Boolean deleteInmuebleSubscription(@RequestBody RequestInmuebleSubscription request) {
 		commandGateway.sendAndWait(new DeleteInmuebleSubscriptionCommand(request.getSubscriptionId(), 
 																		request.getIdInmueble(), 
 																		request.getEmail()));
-		return "Removed";
+		return true;
 	}
 }

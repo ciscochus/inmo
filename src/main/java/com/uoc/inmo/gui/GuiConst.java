@@ -32,6 +32,10 @@ public class GuiConst {
     public static final String NOTIFICATION_SAVE_OK = "Cambios guardados correctamente";
     public static final String NOTIFICATION_SAVE_ERROR = "Se ha producido un error";
     public static final String NOTIFICATION_MESSAGE_OK = "Mensaje enviado correctamente";
+
+    public static final String NOTIFICATION_SUBSCRIPTION_OK = "Se ha suscrito a este inmueble";
+    public static final String NOTIFICATION_UNSUBSCRIPTION_OK = "No recibirá notificaciones de este inmueble";
+
     public static final int NOTIFICATION_TIME = 3000;
     public static final Position NOTIFICACION_POSITION = Position.TOP_END;
 
